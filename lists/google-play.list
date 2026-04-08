@@ -1,6 +1,6 @@
 # NAME: google-play.list
 # SOURCE: https://github.com/hydraponique/roscomvpn-geosite/blob/master/data/google-play
-# UPDATED: 2026-04-08 14:14 UTC
+# UPDATED: 2026-04-08 14:57 UTC
 # TOTAL: 27
 
 DOMAIN-SUFFIX,googleplay.com
