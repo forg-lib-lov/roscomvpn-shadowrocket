@@ -1,6 +1,6 @@
 # NAME: private-ips.list
 # SOURCE: https://github.com/hydraponique/roscomvpn-geoip/blob/master/release/text/private.txt
-# UPDATED: 2026-04-08 13:49 UTC
+# UPDATED: 2026-04-08 14:14 UTC
 # TOTAL: 17
 
 IP-CIDR,10.0.0.0/8,no-resolve
