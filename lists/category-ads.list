@@ -1,0 +1,7 @@
+# NAME: category-ads.list
+# SOURCE: https://github.com/hydraponique/roscomvpn-geosite/blob/master/data/category-ads
+# UPDATED: 2026-04-08 07:08 UTC
+# TOTAL: 2
+
+DOMAIN-SUFFIX,ad.mail.ru
+DOMAIN-SUFFIX,alt-ad.mail.ru

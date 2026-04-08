@@ -1,0 +1,42 @@
+name: Update Shadowrocket Config
+
+on:
+  schedule:
+    # Каждый день в 06:00 UTC (09:00 MSK) — roscomvpn обновляется ночью
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+    # Ручной запуск через кнопку "Run workflow" на GitHub
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run converter
+        env:
+          # Автоматически передаём owner/repo текущего репозитория
+          GITHUB_REPO: ${{ github.repository }}
+        run: python scripts/generate.py
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add lists/ roscomvpn.conf
+          # Коммитим только если что-то изменилось
+          git diff --staged --quiet || git commit -m "chore: auto-update from roscomvpn-routing [$(date -u '+%Y-%m-%d')]"
+          git push

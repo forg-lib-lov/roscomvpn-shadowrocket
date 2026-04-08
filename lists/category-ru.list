@@ -1,0 +1,54 @@
+# NAME: category-ru.list
+# SOURCE: https://github.com/hydraponique/roscomvpn-geosite/blob/master/data/category-ru
+# UPDATED: 2026-04-08 07:08 UTC
+# TOTAL: 49
+
+DOMAIN-SUFFIX,ipify.org
+DOMAIN-SUFFIX,checkip.amazonaws.com
+DOMAIN-SUFFIX,ifconfig.me
+DOMAIN-SUFFIX,2ip.ru
+DOMAIN-SUFFIX,mangalib.me
+DOMAIN-SUFFIX,animego.me
+DOMAIN-SUFFIX,showip.net
+DOMAIN-SUFFIX,avtoto.ru
+DOMAIN-SUFFIX,tilda.cc
+DOMAIN-SUFFIX,vtbglobalperspectives.com
+DOMAIN-SUFFIX,vtb-direct.com
+DOMAIN-SUFFIX,sber.world
+DOMAIN-SUFFIX,sber.ws
+DOMAIN-SUFFIX,sbercoin.com
+DOMAIN-SUFFIX,ssb.msk.ru
+DOMAIN-SUFFIX,vlb100.ru
+DOMAIN-SUFFIX,slavbank.ru
+DOMAIN-SUFFIX,prvbank.ru
+DOMAIN-SUFFIX,pvubank.com
+DOMAIN-SUFFIX,vtb-grants.fut.ru
+DOMAIN-SUFFIX,selkombank.ru
+DOMAIN-SUFFIX,ankb.ru
+DOMAIN-SUFFIX,bank-arzamas.ru
+DOMAIN-SUFFIX,bankermak.ru
+DOMAIN-SUFFIX,alefbank.com
+DOMAIN-SUFFIX,forshtadt.ru
+DOMAIN-SUFFIX,bfa.ru
+DOMAIN-SUFFIX,rkbank.ru
+DOMAIN-SUFFIX,mvs-bank.ru
+DOMAIN-SUFFIX,bank-credit-suisse-moscow.ru
+DOMAIN-SUFFIX,ziraatbank.ru
+DOMAIN-SUFFIX,jpmorgan.ru
+DOMAIN-SUFFIX,noosferabank.ru
+DOMAIN-SUFFIX,westernunion.ru
+DOMAIN-SUFFIX,tagbank.ru
+DOMAIN-SUFFIX,korona.com
+DOMAIN-SUFFIX,credit-zenit.ru
+DOMAIN-SUFFIX,zenit-card.ru
+DOMAIN-SUFFIX,autobahn.db.com
+DOMAIN-SUFFIX,commerzbank.ru
+DOMAIN-SUFFIX,mizuhogroup.com
+DOMAIN-SUFFIX,ibamoscow.ru
+DOMAIN-SUFFIX,ubs.com
+DOMAIN-SUFFIX,smbcr-bank.ru
+DOMAIN-SUFFIX,yoobusiness.ru
+DOMAIN-SUFFIX,ru.ccb.com
+DOMAIN-SUFFIX,bank131.com
+DOMAIN-SUFFIX,asia-pay.ru
+DOMAIN-SUFFIX,rncoluminis.ru

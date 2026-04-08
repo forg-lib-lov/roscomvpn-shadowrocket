@@ -1,0 +1,7 @@
+# NAME: faceit.list
+# SOURCE: https://github.com/hydraponique/roscomvpn-geosite/blob/master/data/faceit
+# UPDATED: 2026-04-08 07:08 UTC
+# TOTAL: 2
+
+DOMAIN-SUFFIX,faceit.com
+DOMAIN-SUFFIX,faceit-cdn.net
