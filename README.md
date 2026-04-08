@@ -5,9 +5,9 @@
 ## Как работает
 
 ```
-roscomvpn-geosite (домены)  ──┐
-roscomvpn-geoip   (IP CIDR) ──┼──► GitHub Actions → lists/*.list + roscomvpn.conf
-                              ┘        ↑ обновляется каждый день в 09:00 MSK
+roscomvpn-geosite (домены)           ──┐
+roscomvpn-geoip   (IP CIDR)          ──┼──► GitHub Actions → lists/*.list + roscomvpn.conf
+hxehex/russia-mobile-internet-whitelist┘        ↑ обновляется каждый день в 09:00 MSK
 
 Shadowrocket ──► update-url ──► подтягивает свежий roscomvpn.conf
 ```
@@ -64,7 +64,18 @@ https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/roscomvpn-shadowrocket/ma
 1. `Конфигурации` → `+` → вставь URL выше
 2. Нажми на конфиг → `Использовать конфигурацию`
 
-### 4. Включи авто-обновление
+### 4. Добавь GeoLite2 базу данных
+
+Это нужно для корректной работы правила `GEOIP,RU,DIRECT` — без неё часть российских IP определяется неверно.
+
+В Shadowrocket:
+1. `Настройки` → `GeoLite2 Database` → поле **Country**
+2. Вставь URL и нажми **Download**:
+```
+https://github.com/P3TERX/GeoLite.mmdb/raw/download/GeoLite2-Country.mmdb
+```
+
+### 5. Включи авто-обновление
 
 В Shadowrocket:
 1. `Конфигурации` → нажми и удержи на конфиге → `Редактировать`
@@ -107,9 +118,10 @@ roscomvpn-shadowrocket/
 │   ├── twitch-ads.list      # Twitch ads → PROXY
 │   ├── steam.list           # Steam → DIRECT
 │   ├── ...                  # (все остальные категории)
-│   ├── whitelist-ips.list   # Спец IP РФ-сервисов → DIRECT
-│   └── direct-ips.list      # ~35k РФ+BY CIDR → DIRECT
-└── roscomvpn.conf           # Готовый конфиг для Shadowrocket
+│   ├── whitelist-ips.list      # Спец IP РФ-сервисов → DIRECT
+│   ├── direct-ips.list         # ~35k РФ+BY CIDR → DIRECT
+│   └── hxehex-whitelist.list   # Российские сервисы (Сбер, Госуслуги, РЖД…) → DIRECT
+└── roscomvpn.conf              # Готовый конфиг для Shadowrocket
 ```
 
 ## Источники правил
@@ -117,3 +129,4 @@ roscomvpn-shadowrocket/
 - Домены: [hydraponique/roscomvpn-geosite](https://github.com/hydraponique/roscomvpn-geosite)
 - IP-адреса: [hydraponique/roscomvpn-geoip](https://github.com/hydraponique/roscomvpn-geoip)
 - Логика роутинга: [hydraponique/roscomvpn-routing](https://github.com/hydraponique/roscomvpn-routing)
+- Российские сервисы (доп.): [hxehex/russia-mobile-internet-whitelist](https://github.com/hxehex/russia-mobile-internet-whitelist) — 2600+ доменов, обновляется ежедневно
