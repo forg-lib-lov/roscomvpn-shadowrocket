@@ -27,11 +27,15 @@ CONF_URL    = f"https://raw.githubusercontent.com/{GITHUB_REPO}/main/roscomvpn.c
 # тип: "geosite" | "geoip"
 # action: "PROXY" | "DIRECT" | "REJECT"
 
-# Формат: (source_name, type, action, output_filename)
+# Формат: (source_name, type, action, output_filename, no_resolve)
+# no_resolve=True  → RULE-SET,...,DIRECT,no-resolve  (не резолвить домены)
+# no_resolve=False → RULE-SET,...,DIRECT             (резолвить домены → проверить IP)
+#
 # ПОРЯДОК ВАЖЕН! Shadowrocket обрабатывает правила сверху вниз:
-# 1. REJECT — блокировка
-# 2. PROXY   — сервисы через VPN (ДО русских, т.e. YouTube выше category-ru)
-# 3. DIRECT  — всё остальное напрямую
+# 0. private-ips  — самое первое (быстрый выход для локальной сети)
+# 1. REJECT       — блокировка
+# 2. PROXY        — сервисы через VPN (ДО русских, т.e. YouTube выше category-ru)
+# 3. DIRECT       — всё остальное напрямую
 DOMAIN_RULES = [
     # BLOCK
     ("win-spy",           "geosite", "REJECT",  "win-spy.list"),
@@ -41,7 +45,7 @@ DOMAIN_RULES = [
     ("youtube",           "geosite", "PROXY",   "youtube.list"),
     ("telegram",          "geosite", "PROXY",   "telegram.list"),
     ("github",            "geosite", "PROXY",   "github.list"),
-    # DIRECT — сервисы без VPN (сначала частные/приватные)
+    # DIRECT — сервисы без VPN
     ("private",           "geosite", "DIRECT",  "private-domains.list"),
     ("torrent",           "geosite", "DIRECT",  "torrent-domains.list"),
     ("epicgames",         "geosite", "DIRECT",  "epicgames.list"),
@@ -59,12 +63,16 @@ DOMAIN_RULES = [
     ("category-ru",       "geosite", "DIRECT",  "category-ru.list"),
 ]
 
-# Формат: (source_name, type, action, output_filename)
+# Формат: (source_name, type, action, output_filename, no_resolve)
 IP_RULES = [
-    # DIRECT IPs (private сначала)
-    ("private",    "geoip", "DIRECT",  "private-ips.list"),
-    ("whitelist",  "geoip", "DIRECT",  "whitelist-ips.list"),
-    ("direct",     "geoip", "DIRECT",  "direct-ips.list"),   # ~35k РФ + BY CIDR
+    # private-ips идёт первым правилом в конфиге (до BLOCK/PROXY)
+    # no_resolve=True: локальные IP никогда не нужно резолвить
+    ("private",   "geoip", "DIRECT", "private-ips.list",   True),
+    # whitelist: специфичные IP сервисов — тоже no-resolve
+    ("whitelist", "geoip", "DIRECT", "whitelist-ips.list",  True),
+    # direct: ~35k РФ+BY CIDR — БЕЗ no-resolve, чтобы резолвить домены
+    # (именно это позволяет sberbank.ru и другим РФ-доменам идти DIRECT)
+    ("direct",    "geoip", "DIRECT", "direct-ips.list",    False),
 ]
 
 # ─── парсер geosite source-формата ───────────────────────────────────────────
@@ -104,7 +112,7 @@ def fetch_geosite(category: str) -> list[str]:
 
 # ─── парсер geoip text-формата ───────────────────────────────────────────────
 
-def fetch_geoip(name: str) -> list[str]:
+def fetch_geoip(name: str, no_resolve: bool = True) -> list[str]:
     """Загружает release/text/<name>.txt и конвертирует CIDR в IP-CIDR строки."""
     url = GEOIP_TEXT.format(f"{name}.txt")
     r = requests.get(url, timeout=60)
@@ -112,6 +120,7 @@ def fetch_geoip(name: str) -> list[str]:
         print(f"  WARN: geoip/{name} → HTTP {r.status_code}")
         return []
 
+    suffix = ",no-resolve" if no_resolve else ""
     lines = []
     for raw in r.text.splitlines():
         cidr = raw.strip()
@@ -119,9 +128,9 @@ def fetch_geoip(name: str) -> list[str]:
             continue
         # базовая валидация CIDR
         if re.match(r"^\d{1,3}(\.\d{1,3}){3}/\d{1,2}$", cidr):
-            lines.append(f"IP-CIDR,{cidr},no-resolve")
+            lines.append(f"IP-CIDR,{cidr}{suffix}")
         elif re.match(r"^[0-9a-fA-F:]+/\d{1,3}$", cidr):
-            lines.append(f"IP-CIDR6,{cidr},no-resolve")
+            lines.append(f"IP-CIDR6,{cidr}{suffix}")
     return lines
 
 # ─── запись .list файлов ──────────────────────────────────────────────────────
@@ -145,6 +154,10 @@ def write_list(filename: str, entries: list[str], source: str):
 
 def build_conf(domain_rules, ip_rules):
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+
+    # Находим private-ips для вставки первым правилом
+    private_ip = next((r for r in ip_rules if r[3] == "private-ips.list"), None)
+    other_ip_rules = [r for r in ip_rules if r[3] != "private-ips.list"]
 
     general = f"""# roscomvpn-shadowrocket — auto-generated {now}
 # Source: https://github.com/hydraponique/roscomvpn-routing
@@ -180,11 +193,20 @@ update-url = {CONF_URL}
 
     rule_lines = ["", "[Rule]"]
 
-    # Объединяем все правила, сохраняя порядок но группируя по action для комментариев
-    all_rules = domain_rules + ip_rules
+    # ── 0. private-ips первым (быстрый выход для локальной сети) ──────────────
+    if private_ip:
+        _, _, _, outfile, _ = private_ip
+        url = f"{RAW_BASE}/{outfile}"
+        rule_lines.append("# ── Локальная сеть ── выход без проверки остальных правил ──")
+        rule_lines.append(f"RULE-SET,{url},DIRECT,no-resolve")
+        rule_lines.append("")
+
+    # ── 1-3. Все остальные правила (BLOCK → PROXY → DIRECT) ──────────────────
+    all_rules = domain_rules + other_ip_rules
     processed_actions = []
 
-    for name, rtype, act, outfile in all_rules:
+    for name, rtype, act, outfile, *flags in all_rules:
+        no_resolve = flags[0] if flags else False
         # Вставляем заголовок группы при смене action
         headers = {
             "REJECT": "# ═══ BLOCK ═══════════════════════════════════════════",
@@ -196,11 +218,17 @@ update-url = {CONF_URL}
             processed_actions.append(act)
 
         url = f"{RAW_BASE}/{outfile}"
-        if rtype == "geoip":
+        if no_resolve:
             rule_lines.append(f"RULE-SET,{url},{act},no-resolve")
         else:
             rule_lines.append(f"RULE-SET,{url},{act}")
 
+    # ── 4. GEOIP catch-all для РФ/BY доменов не попавших в списки ────────────
+    rule_lines.append("")
+    rule_lines.append("# ── GEOIP: страховка для РФ/BY доменов вне category-ru ──")
+    rule_lines.append("GEOIP,RU,DIRECT")
+    rule_lines.append("GEOIP,BY,DIRECT")
+    rule_lines.append("")
     rule_lines.append("FINAL,PROXY")
     rule_lines.append("")
 
@@ -241,11 +269,11 @@ def main():
 
     # 2. Конвертируем geoip IP-листы
     print("\n── IP lists (geoip) ───────────────────────────────────")
-    for name, rtype, action, outfile in IP_RULES:
+    for name, rtype, action, outfile, no_resolve in IP_RULES:
         if rtype != "geoip":
             continue
-        print(f"  Fetching geoip/{name}.txt...")
-        entries = fetch_geoip(name)
+        print(f"  Fetching geoip/{name}.txt (no-resolve={no_resolve})...")
+        entries = fetch_geoip(name, no_resolve=no_resolve)
         if not entries:
             print(f"  SKIP: {name} (empty)")
             continue
