@@ -1,11 +1,15 @@
 # NAME: whitelist-domains.list
 # SOURCE: https://github.com/hydraponique/roscomvpn-geosite/blob/master/data/whitelist
-# UPDATED: 2026-04-12 08:32 UTC
-# TOTAL: 455
+# UPDATED: 2026-04-13 11:05 UTC
+# TOTAL: 467
 
 DOMAIN-SUFFIX,ipify.org
 DOMAIN-SUFFIX,checkip.amazonaws.com
 DOMAIN-SUFFIX,ifconfig.me
+DOMAIN-SUFFIX,ipapi.is
+DOMAIN-SUFFIX,iplocate.io
+DOMAIN-SUFFIX,ip.sb
+DOMAIN-SUFFIX,2ip.ru
 DOMAIN-SUFFIX,government.ru
 DOMAIN-SUFFIX,gov.ru
 DOMAIN-SUFFIX,gosuslugi.ru
@@ -191,7 +195,6 @@ DOMAIN-SUFFIX,bankline.ru
 DOMAIN-SUFFIX,beeline.ru
 DOMAIN-SUFFIX,beta-bank.com
 DOMAIN-SUFFIX,bitrix24.ru
-DOMAIN-SUFFIX,boosty.to
 DOMAIN-SUFFIX,bronevik.com
 DOMAIN-SUFFIX,cdn-tinkoff.ru
 DOMAIN-SUFFIX,cdn-vk.ru
@@ -458,3 +461,12 @@ DOMAIN-SUFFIX,youla-web-static.mrgcdn.ru
 DOMAIN-SUFFIX,youla.io
 DOMAIN-SUFFIX,youla.ru
 DOMAIN-SUFFIX,zentotem.net
+DOMAIN-SUFFIX,hematonix.ru
+DOMAIN-SUFFIX,medtrum.ru
+DOMAIN-SUFFIX,medtrum.eu
+DOMAIN-SUFFIX,anytimeru.com
+DOMAIN-SUFFIX,lumiflex.ru
+DOMAIN-SUFFIX,ican-sinocare.ru
+DOMAIN-SUFFIX,freestylediabetes.ru
+DOMAIN-SUFFIX,rsscenter.cloud
+DOMAIN-SUFFIX,dbankcloud.ru

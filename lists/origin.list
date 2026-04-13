@@ -1,7 +1,7 @@
 # NAME: origin.list
 # SOURCE: https://github.com/hydraponique/roscomvpn-geosite/blob/master/data/origin
-# UPDATED: 2026-04-12 08:32 UTC
-# TOTAL: 171
+# UPDATED: 2026-04-13 11:05 UTC
+# TOTAL: 160
 
 DOMAIN-SUFFIX,dawngate.com
 DOMAIN-SUFFIX,eastore.com
@@ -13,7 +13,6 @@ DOMAIN-SUFFIX,origin-a.akamaihd.net
 DOMAIN-SUFFIX,rtm.tnt-ea.com
 DOMAIN-SUFFIX,ssl-lvlt.cdn.ea.com
 DOMAIN-SUFFIX,awayoutgame.com
-DOMAIN-SUFFIX,battlefieldbadcompany2.com
 DOMAIN-SUFFIX,battlefront2.com
 DOMAIN-SUFFIX,battlefrontii.com
 DOMAIN-SUFFIX,bejewled-stars.com
@@ -28,7 +27,6 @@ DOMAIN-SUFFIX,dawngatechronicles.com
 DOMAIN-SUFFIX,dicela.com
 DOMAIN-SUFFIX,dicela.net
 DOMAIN-SUFFIX,ea-anz-press.com
-DOMAIN-SUFFIX,ea.com
 DOMAIN-SUFFIX,eaaccess.com
 DOMAIN-SUFFIX,eacashcard.com
 DOMAIN-SUFFIX,eacodigos.com
@@ -83,14 +81,6 @@ DOMAIN-SUFFIX,anthemgame.com
 DOMAIN-SUFFIX,anthemthegame.com
 DOMAIN-SUFFIX,apexlegends.com
 DOMAIN-SUFFIX,projectapex.com
-DOMAIN-SUFFIX,battlefield.com
-DOMAIN-SUFFIX,battlefield1943.com
-DOMAIN-SUFFIX,battlefield3.com
-DOMAIN-SUFFIX,battlefield4.com
-DOMAIN-SUFFIX,battlefield5.com
-DOMAIN-SUFFIX,battlefieldheroes.com
-DOMAIN-SUFFIX,battlefieldv.com
-DOMAIN-SUFFIX,battlelog.com
 DOMAIN-SUFFIX,bioware.com
 DOMAIN-SUFFIX,biowarestore.com
 DOMAIN-SUFFIX,eamythic.com
@@ -105,7 +95,6 @@ DOMAIN-SUFFIX,daoc.net
 DOMAIN-SUFFIX,darkageofcamelot.com
 DOMAIN-SUFFIX,darkness-risen.com
 DOMAIN-SUFFIX,deadspacegame.com
-DOMAIN-SUFFIX,dice.se
 DOMAIN-SUFFIX,dragonage.com
 DOMAIN-SUFFIX,dragonagekeep.com
 DOMAIN-SUFFIX,dragonagemovie.com

@@ -1,17 +1,23 @@
 # NAME: category-ru.list
 # SOURCE: https://github.com/hydraponique/roscomvpn-geosite/blob/master/data/category-ru
-# UPDATED: 2026-04-12 08:32 UTC
-# TOTAL: 49
+# UPDATED: 2026-04-13 11:05 UTC
+# TOTAL: 55
 
 DOMAIN-SUFFIX,ipify.org
 DOMAIN-SUFFIX,checkip.amazonaws.com
 DOMAIN-SUFFIX,ifconfig.me
+DOMAIN-SUFFIX,ipapi.is
+DOMAIN-SUFFIX,iplocate.io
+DOMAIN-SUFFIX,ip.sb
 DOMAIN-SUFFIX,2ip.ru
 DOMAIN-SUFFIX,mangalib.me
 DOMAIN-SUFFIX,animego.me
 DOMAIN-SUFFIX,showip.net
 DOMAIN-SUFFIX,avtoto.ru
 DOMAIN-SUFFIX,tilda.cc
+DOMAIN-SUFFIX,kinescope.io
+DOMAIN-SUFFIX,kinescopecdn.net
+DOMAIN-SUFFIX,redheadsound.studio
 DOMAIN-SUFFIX,vtbglobalperspectives.com
 DOMAIN-SUFFIX,vtb-direct.com
 DOMAIN-SUFFIX,sber.world
