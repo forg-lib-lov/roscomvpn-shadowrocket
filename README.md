@@ -91,7 +91,7 @@ DOMAIN_RULES = [
 ```
 roscomvpn-geosite (домены)            ──┐
 roscomvpn-geoip   (IP CIDR)           ──┼──► GitHub Actions → lists/*.list + roscomvpn.conf
-hxehex/russia-mobile-internet-whitelist┘        ↑ каждый день в 09:00 MSK
+hxehex/russia-mobile-internet-whitelist ┘       ↑ каждый день в 09:00 MSK
 
 Shadowrocket ──► update-url ──► подтягивает свежий roscomvpn.conf
 ```
