@@ -1,8 +1,11 @@
 # NAME: hxehex-whitelist.list
 # SOURCE: https://raw.githubusercontent.com/hxehex/russia-mobile-internet-whitelist/main/whitelist.txt
-# UPDATED: 2026-05-11 09:46 UTC
-# TOTAL: 890
+# UPDATED: 2026-05-12 08:45 UTC
+# TOTAL: 893
 
+DOMAIN-SUFFIX,sochisirius.ru
+DOMAIN-SUFFIX,edu.sirius.online
+DOMAIN-SUFFIX,storage0.sirius.online
 DOMAIN-SUFFIX,alfa-mobile.alfabank.ru
 DOMAIN-SUFFIX,epp.genproc.gov.ru
 DOMAIN-SUFFIX,duma.gov.ru
