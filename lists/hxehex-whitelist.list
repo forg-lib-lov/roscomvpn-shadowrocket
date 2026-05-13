@@ -1,7 +1,7 @@
 # NAME: hxehex-whitelist.list
 # SOURCE: https://raw.githubusercontent.com/hxehex/russia-mobile-internet-whitelist/main/whitelist.txt
-# UPDATED: 2026-05-13 08:50 UTC
-# TOTAL: 893
+# UPDATED: 2026-05-13 09:52 UTC
+# TOTAL: 890
 
 DOMAIN-SUFFIX,sochisirius.ru
 DOMAIN-SUFFIX,edu.sirius.online
@@ -589,7 +589,6 @@ DOMAIN-SUFFIX,ticket.rzd.ru
 DOMAIN-SUFFIX,my.rzd.ru
 DOMAIN-SUFFIX,prodvizhenie.rzd.ru
 DOMAIN-SUFFIX,disk.rzd.ru
-DOMAIN-SUFFIX,rzd.ru
 DOMAIN-SUFFIX,www.rzd.ru
 DOMAIN-SUFFIX,team.rzd.ru
 DOMAIN-SUFFIX,contacts.rzd.ru
@@ -714,7 +713,6 @@ DOMAIN-SUFFIX,banners-website.wildberries.ru
 DOMAIN-SUFFIX,chat-prod.wildberries.ru
 DOMAIN-SUFFIX,id.vk.ru
 DOMAIN-SUFFIX,surveys.yandex.ru
-DOMAIN-SUFFIX,alfabank.ru
 DOMAIN-SUFFIX,pl-res.online.sberbank.ru
 DOMAIN-SUFFIX,privacy-cs.mail.ru
 DOMAIN-SUFFIX,disk.2gis.com
@@ -788,7 +786,6 @@ DOMAIN-SUFFIX,widgets.kinopoisk.ru
 DOMAIN-SUFFIX,payment-widget.plus.kinopoisk.ru
 DOMAIN-SUFFIX,api.events.plus.yandex.net
 DOMAIN-SUFFIX,speller.yandex.net
-DOMAIN-SUFFIX,2gis.ru
 DOMAIN-SUFFIX,d-assets.2gis.ru
 DOMAIN-SUFFIX,s0.bss.2gis.com
 DOMAIN-SUFFIX,s1.bss.2gis.com
