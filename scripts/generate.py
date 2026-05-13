@@ -92,20 +92,37 @@ PLAIN_URL_RULES = [
 # ─── парсер plain-text доменных списков ─────────────────────────────────────
 
 def fetch_plain_domains(url: str) -> list[str]:
-    """Загружает plain-text список доменов (по одному на строку) и конвертирует
-    каждый в DOMAIN-SUFFIX для Shadowrocket RULE-SET формата."""
+    """
+    Загружает plain-text список доменов.
+
+    Поддерживает оба формата:
+    - один домен на строку;
+    - много доменов в одной строке через пробел.
+    """
     r = requests.get(url, timeout=30)
     if r.status_code != 200:
-        print(f"  WARN: {url} → HTTP {r.status_code}")
+        print(f" WARN: {url} → HTTP {r.status_code}")
         return []
-    lines = []
-    for raw in r.text.splitlines():
-        domain = raw.strip()
-        if not domain or domain.startswith("#"):
-            continue
-        if re.match(r"^[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,}$", domain):
-            lines.append(f"DOMAIN-SUFFIX,{domain}")
-    return lines
+
+    entries = []
+    seen = set()
+
+    for line in r.text.splitlines():
+        # убираем комментарии после #
+        line = line.split("#", 1)[0]
+
+        # режем не только по строкам, но и по пробелам/табам
+        for raw in re.split(r"\s+", line):
+            domain = raw.strip().lower().strip(",;")
+            if not domain:
+                continue
+
+            if re.match(r"^[a-z0-9]([a-z0-9\-\.]*[a-z0-9])?\.[a-z]{2,}$", domain):
+                if domain not in seen:
+                    seen.add(domain)
+                    entries.append(f"DOMAIN-SUFFIX,{domain}")
+
+    return entries
 
 # ─── парсер geosite source-формата ───────────────────────────────────────────
 
