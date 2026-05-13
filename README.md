@@ -124,4 +124,4 @@ roscomvpn-shadowrocket/
 - Домены: [hydraponique/roscomvpn-geosite](https://github.com/hydraponique/roscomvpn-geosite)
 - IP-адреса: [hydraponique/roscomvpn-geoip](https://github.com/hydraponique/roscomvpn-geoip)
 - Логика роутинга: [hydraponique/roscomvpn-routing](https://github.com/hydraponique/roscomvpn-routing)
-- Российские сервисы (доп.): [hxehex/russia-mobile-internet-whitelist](https://github.com/hxehex/russia-mobile-internet-whitelist) — 2600+ доменов, обновляется ежедневно
+- Российские сервисы / SNI-whitelist (доп.):  [hxehex/russia-mobile-internet-whitelist](https://github.com/hxehex/russia-mobile-internet-whitelist) — community-список SNI-доменов и IP/CIDR, которые могут оставаться доступными при мобильных ограничениях. В этот Shadowrocket-конфиг импортируется только whitelist.txt как доменный DIRECT-слой.
