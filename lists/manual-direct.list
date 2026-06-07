@@ -1,7 +1,8 @@
 # NAME: manual-direct.list
 # SOURCE: manual DIRECT overrides
-# UPDATED: 2026-06-07 22:13 UTC
-# TOTAL: 2
+# UPDATED: 2026-06-07 22:48 UTC
+# TOTAL: 3
 
+DOMAIN-SUFFIX,avto.ru
 DOMAIN-SUFFIX,autowp.ru
 DOMAIN-SUFFIX,appstorrent.ru
