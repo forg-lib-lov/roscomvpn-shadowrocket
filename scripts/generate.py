@@ -107,6 +107,8 @@ FORCE_PROXY_CATEGORIES = [
 
 MANUAL_DIRECT_DOMAINS = [
     # Пользовательские исключения: эти сайты должны открываться напрямую.
+    # Журнал Auto.ru грузит стили и скрипты с домена avto.ru, а не auto.ru.
+    "avto.ru",
     "autowp.ru",
     "appstorrent.ru",
 ]
