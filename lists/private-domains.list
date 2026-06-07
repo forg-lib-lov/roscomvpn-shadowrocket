@@ -1,6 +1,6 @@
 # NAME: private-domains.list
 # SOURCE: https://github.com/hydraponique/roscomvpn-geosite/blob/master/data/private
-# UPDATED: 2026-06-07 21:37 UTC
+# UPDATED: 2026-06-07 22:12 UTC
 # TOTAL: 121
 
 DOMAIN-SUFFIX,home.arpa
