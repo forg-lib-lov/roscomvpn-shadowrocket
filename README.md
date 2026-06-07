@@ -60,11 +60,19 @@ https://github.com/P3TERX/GeoLite.mmdb/raw/download/GeoLite2-Country.mmdb
 
 Конфиг в репозитории обновляется каждый день в 09:00 MSK через GitHub Actions.
 
+После публикации изменений GitHub Actions автоматически очищает кеш jsDelivr для `roscomvpn.conf` и всех подключённых `lists/*.list`, чтобы Shadowrocket быстрее получал свежую версию.
+
 Вручную: `Configurations` → свайп влево по конфигу → `Update Config`.
 
 Автоматически: `Settings` → `Auto Update` → включи обновление конфигов и выставь интервал. Для фонового обновления в iOS должен быть включён `Background App Refresh` для Shadowrocket.
 
 `.list`-файлы подключены через CDN URL и обновляются Shadowrocket при применении или компиляции конфига.
+
+Если нужно срочно очистить CDN-кеш вручную, открой:
+
+```text
+https://purge.jsdelivr.net/gh/forg-lib-lov/roscomvpn-shadowrocket@main/roscomvpn.conf
+```
 
 ## Кастомизация
 

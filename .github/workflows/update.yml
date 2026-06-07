@@ -1,6 +1,14 @@
 name: Update Shadowrocket Config
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/update.yml"
+      - "scripts/generate.py"
+      - "roscomvpn.conf"
+      - "lists/**"
   schedule:
     # Каждый день в 06:00 UTC (09:00 MSK) — roscomvpn обновляется ночью
     - cron: "0 6 * * *"
@@ -33,10 +41,38 @@ jobs:
         run: python scripts/generate.py
 
       - name: Commit and push if changed
+        id: commit
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add lists/ roscomvpn.conf
-          # Коммитим только если что-то изменилось
-          git diff --staged --quiet || git commit -m "chore: auto-update generated rules [$(date -u '+%Y-%m-%d')]"
-          git push
+          if git diff --staged --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            git commit -m "chore: auto-update generated rules [$(date -u '+%Y-%m-%d')]"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Purge jsDelivr cache
+        if: steps.commit.outputs.changed == 'true' || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        run: |
+          set -euo pipefail
+          sleep 10
+
+          purge() {
+            local path="$1"
+            local url="https://purge.jsdelivr.net/gh/${GITHUB_REPOSITORY}@${GITHUB_REF_NAME}/${path}"
+            echo "Purging ${path}"
+            curl --fail --silent --show-error --retry 3 --retry-delay 5 "$url" >/dev/null
+          }
+
+          purge "roscomvpn.conf"
+
+          grep '^RULE-SET,' roscomvpn.conf \
+            | cut -d',' -f2 \
+            | sed 's#.*/lists/#lists/#' \
+            | sort -u \
+            | while read -r path; do
+                purge "$path"
+              done
