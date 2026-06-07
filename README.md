@@ -1,127 +1,114 @@
 # roscomvpn-shadowrocket
 
-Готовый конфиг [Shadowrocket](https://apps.apple.com/ru/app/shadowrocket/id932747118) для России: **весь трафик через VPN**, кроме российских сервисов — они идут напрямую.
+Готовый конфиг [Shadowrocket](https://apps.apple.com/ru/app/shadowrocket/id932747118) для России: по умолчанию трафик идёт через VPN, а российские, локальные и явно разрешённые сервисы идут напрямую.
 
-Правила обновляются автоматически каждый день из [roscomvpn-routing](https://github.com/hydraponique/roscomvpn-routing).
+Проект адаптирует DEFAULT-профиль [roscomvpn-routing](https://github.com/hydraponique/roscomvpn-routing) под формат Shadowrocket. Домены и IP берутся из [roscomvpn-geosite](https://github.com/hydraponique/roscomvpn-geosite), [roscomvpn-geoip](https://github.com/hydraponique/roscomvpn-geoip) и дополнительного RU-whitelist от [hxehex](https://github.com/hxehex/russia-mobile-internet-whitelist).
 
 ## Принцип роутинга
 
 | Действие | Что идёт |
 |----------|----------|
-| 🚫 REJECT | Windows телеметрия, реклама (VK, OK) |
-| 🌐 PROXY  | YouTube, Telegram, GitHub и всё остальное зарубежное |
-| ✅ DIRECT | РФ/BY домены и IP, Сбербанк, Госуслуги, РЖД, ВКонтакте, Яндекс, Steam, Epic, Riot, EFT, Twitch, Microsoft, Apple, Google Play, Pinterest, Faceit |
+| REJECT | Windows телеметрия, рекламные домены |
+| PROXY | Google Play, Twitch Ads, YouTube, Telegram, GitHub и весь остальной трафик, который не попал в DIRECT/REJECT |
+| DIRECT | локальные адреса, РФ/BY домены и IP, белые списки российских сервисов, Steam, Epic, Riot, EFT, Twitch, Microsoft, Apple, Pinterest, Faceit |
 
-> Если сервис не попал ни в одно правило — идёт через VPN (`FINAL,PROXY`).
+Если домен не попал в доменные списки, Shadowrocket сначала проверит `GEOIP,RU` и `GEOIP,BY`. Российские и белорусские IP пойдут напрямую, всё остальное уйдёт через VPN по `FINAL,PROXY`.
 
-## Быстрый старт — без fork'а
+## Быстрый старт
 
-Если тебя устраивают правила как есть, просто добавь готовый конфиг:
+Добавь готовый конфиг в Shadowrocket:
 
-```
-https://raw.githubusercontent.com/forg-lib-lov/roscomvpn-shadowrocket/main/roscomvpn.conf
+```text
+https://cdn.jsdelivr.net/gh/forg-lib-lov/roscomvpn-shadowrocket@main/roscomvpn.conf
 ```
 
 В Shadowrocket: `Configurations` → `+` → вставь URL → нажми на конфиг → `Use Config`.
 
-Конфиг обновляется в репо каждый день в 09:00 MSK. Чтобы подтянуть свежую версию — смотри раздел [Обновление конфига](#обновление-конфига).
+## Настройка GeoLite2
 
-## Настройка (один раз)
-
-### 1. GeoLite2 — база геолокации
-
-Без неё правило `GEOIP,RU,DIRECT` работает неточно (часть российских IP не распознаётся).
+Для `GEOIP,RU,DIRECT` и `GEOIP,BY,DIRECT` нужна актуальная GeoLite2 Country база.
 
 В Shadowrocket: `Settings` → `GeoLite2 Database` → поле **Country** → вставь URL → `Download`:
 
-```
+```text
 https://github.com/P3TERX/GeoLite.mmdb/raw/download/GeoLite2-Country.mmdb
 ```
 
-## Обновление конфига
+## Обновление
 
-Конфиг в репо обновляется сам каждый день в 09:00 MSK. Shadowrocket не подтягивает его автоматически — нужно настроить или обновить вручную.
+Конфиг в репозитории обновляется каждый день в 09:00 MSK через GitHub Actions.
 
-**Вручную:** `Configurations` → свайп влево по конфигу → `Update Config`
+Вручную: `Configurations` → свайп влево по конфигу → `Update Config`.
 
-**Автоматически:** `Settings` → `Auto Update` → включи обновление конфигов, выставь интервал (1–7 дней). Требует **Background App Refresh** в iOS Settings → General → Background App Refresh → Shadowrocket.
+Автоматически: `Settings` → `Auto Update` → включи обновление конфигов и выставь интервал. Для фонового обновления в iOS должен быть включён `Background App Refresh` для Shadowrocket.
 
-> Правила в `.list` файлах обновляются отдельно при каждом нажатии **Use Config** или **Compile Config**.
+`.list`-файлы подключены через CDN URL и обновляются Shadowrocket при применении или компиляции конфига.
 
----
+## Кастомизация
 
-## Хочешь кастомизировать — сделай fork
+1. Сделай fork репозитория. Репозиторий должен быть публичным, если ты хочешь использовать jsDelivr URL.
+2. В своём репозитории открой `Actions` → `Update Shadowrocket Config` → `Run workflow`.
+3. Добавь свой конфиг в Shadowrocket:
 
-Если нужно добавить/убрать правила под себя:
-
-### 1. Создай репо на GitHub
-
-Форкни этот репо (кнопка Fork вверху страницы). Репо должно быть **публичным**.
-
-### 2. Запусти первый build
-
-В своём репо: вкладка **Actions** → `Update Shadowrocket Config` → **Run workflow**.
-
-Через ~2 минуты появятся `lists/*.list` и свежий `roscomvpn.conf`.
-
-### 3. Добавь свой конфиг в Shadowrocket
-
-```
-https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/roscomvpn-shadowrocket/main/roscomvpn.conf
+```text
+https://cdn.jsdelivr.net/gh/YOUR_GITHUB_USERNAME/roscomvpn-shadowrocket@main/roscomvpn.conf
 ```
 
-### 4. Кастомизация правил
+Если у форка другая ветка, замени `@main` на её имя.
 
-Отредактируй `scripts/generate.py`:
+Правила редактируются в `scripts/generate.py`. Основные списки:
 
 ```python
 DOMAIN_RULES = [
-    # добавь свою категорию:
-    ("my-category", "geosite", "PROXY", "my-category.list"),
-    ...
+    ("youtube", "geosite", "PROXY", "youtube.list"),
+    ("category-ru", "geosite", "DIRECT", "category-ru.list"),
+]
+
+IP_RULES = [
+    ("direct", "geoip", "DIRECT", "direct-ips.list", True),
 ]
 ```
 
-После изменений — запусти workflow вручную или подожди автообновления в 09:00 MSK.
-
----
+Генератор падает с ошибкой, если источник недоступен или после конвертации категория стала пустой. Это сделано специально, чтобы GitHub Actions не публиковал частично сломанный конфиг.
 
 ## Как это работает
 
-```
-roscomvpn-geosite (домены)            ──┐
-roscomvpn-geoip   (IP CIDR)           ──┼──► GitHub Actions → lists/*.list + roscomvpn.conf
-hxehex/russia-mobile-internet-whitelist ┘       ↑ каждый день в 09:00 MSK
+```text
+roscomvpn-geosite              ──┐
+roscomvpn-geoip                ──┼──► scripts/generate.py ──► lists/*.list + roscomvpn.conf
+hxehex/russia-mobile-internet-whitelist ──┘
 
-Shadowrocket ──► update-url ──► подтягивает свежий roscomvpn.conf
+Shadowrocket ──► update-url ──► свежий roscomvpn.conf
+             └─► RULE-SET URLs ──► списки правил
 ```
+
+По умолчанию опубликованные ссылки строятся через jsDelivr:
+
+```text
+https://cdn.jsdelivr.net/gh/{owner}/{repo}@{branch}/...
+```
+
+Для нестандартной публикации можно задать переменные окружения:
+
+| Переменная | Назначение |
+|------------|------------|
+| `GITHUB_REPO` | `owner/repo` текущего репозитория |
+| `GITHUB_BRANCH` | ветка для публичных URL |
+| `PUBLISH_BASE` | полный базовый URL, если не нужен jsDelivr |
 
 ## Структура файлов
 
-```
+```text
 roscomvpn-shadowrocket/
-├── .github/workflows/
-│   └── update.yml              # GitHub Actions: ежедневный auto-update
-├── scripts/
-│   └── generate.py             # Конвертер roscomvpn → Shadowrocket
-├── lists/
-│   ├── win-spy.list            # Windows телеметрия → REJECT
-│   ├── category-ads.list       # Реклама → REJECT
-│   ├── youtube.list            # YouTube → PROXY
-│   ├── telegram.list           # Telegram → PROXY
-│   ├── github.list             # GitHub → PROXY
-│   ├── twitch-ads.list         # Twitch ads → PROXY
-│   ├── steam.list              # Steam → DIRECT
-│   ├── ...                     # (все остальные категории)
-│   ├── whitelist-ips.list      # Спец IP РФ-сервисов → DIRECT
-│   ├── direct-ips.list         # ~35k РФ+BY CIDR → DIRECT
-│   └── hxehex-whitelist.list   # Сбер, Госуслуги, РЖД и др. → DIRECT
-└── roscomvpn.conf              # Готовый конфиг для Shadowrocket
+├── .github/workflows/update.yml  # ежедневное обновление
+├── scripts/generate.py           # генератор Shadowrocket-правил
+├── lists/                        # опубликованные RULE-SET списки
+└── roscomvpn.conf                # готовый конфиг
 ```
 
 ## Источники правил
 
+- Логика профиля: [hydraponique/roscomvpn-routing](https://github.com/hydraponique/roscomvpn-routing)
 - Домены: [hydraponique/roscomvpn-geosite](https://github.com/hydraponique/roscomvpn-geosite)
 - IP-адреса: [hydraponique/roscomvpn-geoip](https://github.com/hydraponique/roscomvpn-geoip)
-- Логика роутинга: [hydraponique/roscomvpn-routing](https://github.com/hydraponique/roscomvpn-routing)
-- Российские сервисы / SNI-whitelist (доп.):  [hxehex/russia-mobile-internet-whitelist](https://github.com/hxehex/russia-mobile-internet-whitelist) — community-список SNI-доменов и IP/CIDR, которые могут оставаться доступными при мобильных ограничениях. В этот Shadowrocket-конфиг импортируется только whitelist.txt как доменный DIRECT-слой.
+- Дополнительный DIRECT-слой: [hxehex/russia-mobile-internet-whitelist](https://github.com/hxehex/russia-mobile-internet-whitelist)

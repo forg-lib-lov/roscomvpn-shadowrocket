@@ -1,93 +1,138 @@
 #!/usr/bin/env python3
 """
-Конвертер roscomvpn-routing → Shadowrocket .list + .conf
-Источник правил: https://github.com/hydraponique/roscomvpn-routing
+Shadowrocket-адаптация DEFAULT-профиля roscomvpn-routing.
+Источники списков: roscomvpn-geosite, roscomvpn-geoip и дополнительный RU-whitelist.
 """
 
+from __future__ import annotations
+
+import ipaddress
 import os
 import re
-import base64
-import requests
 from datetime import datetime, timezone
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
 
 # ─── настройки ───────────────────────────────────────────────────────────────
 
-GEOSITE_API = "https://api.github.com/repos/hydraponique/roscomvpn-geosite/contents/data/{}"
-GEOIP_TEXT  = "https://cdn.jsdelivr.net/gh/hydraponique/roscomvpn-geoip/release/text/{}"
+GEOSITE_DATA = "https://raw.githubusercontent.com/hydraponique/roscomvpn-geosite/master/data/{}"
+GEOIP_TEXT = "https://raw.githubusercontent.com/hydraponique/roscomvpn-geoip/master/release/text/{}"
 
-OUTPUT_DIR  = os.path.join(os.path.dirname(__file__), "..", "lists")
-CONF_PATH   = os.path.join(os.path.dirname(__file__), "..", "roscomvpn.conf")
+OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "..", "lists")
+CONF_PATH = os.path.join(os.path.dirname(__file__), "..", "roscomvpn.conf")
 
-# GitHub username подставляется через env-переменную GITHUB_REPO (owner/repo)
+# GitHub repo подставляется через env-переменную GITHUB_REPO (owner/repo).
 GITHUB_REPO = os.environ.get("GITHUB_REPO", "forg-lib-lov/roscomvpn-shadowrocket")
-RAW_BASE    = f"https://raw.githubusercontent.com/{GITHUB_REPO}/main/lists"
-CONF_URL    = f"https://raw.githubusercontent.com/{GITHUB_REPO}/main/roscomvpn.conf"
+GITHUB_BRANCH = os.environ.get("GITHUB_BRANCH", "main")
+PUBLISH_BASE = os.environ.get(
+    "PUBLISH_BASE",
+    f"https://cdn.jsdelivr.net/gh/{GITHUB_REPO}@{GITHUB_BRANCH}",
+).rstrip("/")
+RAW_BASE = f"{PUBLISH_BASE}/lists"
+CONF_URL = f"{PUBLISH_BASE}/roscomvpn.conf"
 
-# ─── категории: (имя, тип, action) ───────────────────────────────────────────
-# тип: "geosite" | "geoip"
-# action: "PROXY" | "DIRECT" | "REJECT"
+USER_AGENT = f"roscomvpn-shadowrocket/{GITHUB_REPO}"
 
-# Формат: (source_name, type, action, output_filename, no_resolve)
-# no_resolve=True  → RULE-SET,...,DIRECT,no-resolve  (не резолвить домены)
-# no_resolve=False → RULE-SET,...,DIRECT             (резолвить домены → проверить IP)
+DOMAIN_RE = re.compile(
+    r"^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+"
+    r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$"
+)
+
+
+class SourceError(RuntimeError):
+    """Ошибка источника или конвертации, при которой нельзя публиковать конфиг."""
+
+
+# ─── категории ───────────────────────────────────────────────────────────────
+# Формат DOMAIN_RULES: (source_name, type, action, output_filename)
+# Формат IP_RULES:     (source_name, type, action, output_filename, no_resolve)
 #
 # ПОРЯДОК ВАЖЕН! Shadowrocket обрабатывает правила сверху вниз:
-# 0. private-ips  — самое первое (быстрый выход для локальной сети)
-# 1. REJECT       — блокировка
-# 2. PROXY        — сервисы через VPN (ДО русских, т.e. YouTube выше category-ru)
-# 3. DIRECT       — всё остальное напрямую
+# 0. private-ips — локальная сеть
+# 1. REJECT      — блокировка
+# 2. PROXY       — сервисы через VPN
+# 3. DIRECT      — российские/локальные/игровые сервисы напрямую
+
 DOMAIN_RULES = [
     # BLOCK
-    ("win-spy",           "geosite", "REJECT",  "win-spy.list"),
-    ("category-ads",      "geosite", "REJECT",  "category-ads.list"),
-    # PROXY (важно: идут ДО всех DIRECT-правил)
-    ("twitch-ads",        "geosite", "PROXY",   "twitch-ads.list"),
-    ("youtube",           "geosite", "PROXY",   "youtube.list"),
-    ("telegram",          "geosite", "PROXY",   "telegram.list"),
-    ("github",            "geosite", "PROXY",   "github.list"),
-    # DIRECT — сервисы без VPN
-    ("private",           "geosite", "DIRECT",  "private-domains.list"),
-    ("torrent",           "geosite", "DIRECT",  "torrent-domains.list"),
-    ("epicgames",         "geosite", "DIRECT",  "epicgames.list"),
-    ("origin",            "geosite", "DIRECT",  "origin.list"),
-    ("riot",              "geosite", "DIRECT",  "riot.list"),
-    ("escapefromtarkov",  "geosite", "DIRECT",  "escapefromtarkov.list"),
-    ("steam",             "geosite", "DIRECT",  "steam.list"),
-    ("faceit",            "geosite", "DIRECT",  "faceit.list"),
-    ("twitch",            "geosite", "DIRECT",  "twitch.list"),
-    ("microsoft",         "geosite", "DIRECT",  "microsoft.list"),
-    ("apple",             "geosite", "DIRECT",  "apple.list"),
-    ("google-play",       "geosite", "DIRECT",  "google-play.list"),
-    ("pinterest",         "geosite", "DIRECT",  "pinterest.list"),
-    ("whitelist",         "geosite", "DIRECT",  "whitelist-domains.list"),
-    ("category-ru",       "geosite", "DIRECT",  "category-ru.list"),
+    ("win-spy", "geosite", "REJECT", "win-spy.list"),
+    ("category-ads", "geosite", "REJECT", "category-ads.list"),
+    # PROXY — порядок выровнен с DEFAULT-профилем roscomvpn-routing
+    ("google-play", "geosite", "PROXY", "google-play.list"),
+    ("twitch-ads", "geosite", "PROXY", "twitch-ads.list"),
+    ("youtube", "geosite", "PROXY", "youtube.list"),
+    ("telegram", "geosite", "PROXY", "telegram.list"),
+    ("github", "geosite", "PROXY", "github.list"),
+    # DIRECT
+    ("private", "geosite", "DIRECT", "private-domains.list"),
+    ("torrent", "geosite", "DIRECT", "torrent-domains.list"),
+    ("epicgames", "geosite", "DIRECT", "epicgames.list"),
+    ("origin", "geosite", "DIRECT", "origin.list"),
+    ("riot", "geosite", "DIRECT", "riot.list"),
+    ("escapefromtarkov", "geosite", "DIRECT", "escapefromtarkov.list"),
+    ("steam", "geosite", "DIRECT", "steam.list"),
+    ("faceit", "geosite", "DIRECT", "faceit.list"),
+    ("twitch", "geosite", "DIRECT", "twitch.list"),
+    ("microsoft", "geosite", "DIRECT", "microsoft.list"),
+    ("apple", "geosite", "DIRECT", "apple.list"),
+    ("pinterest", "geosite", "DIRECT", "pinterest.list"),
+    ("whitelist", "geosite", "DIRECT", "whitelist-domains.list"),
+    ("category-ru", "geosite", "DIRECT", "category-ru.list"),
 ]
 
-# Формат: (source_name, type, action, output_filename, no_resolve)
 IP_RULES = [
-    # private-ips идёт первым правилом в конфиге (до BLOCK/PROXY)
-    # no_resolve=True: локальные IP никогда не нужно резолвить
-    ("private",   "geoip", "DIRECT", "private-ips.list",   True),
-    # whitelist: специфичные IP сервисов — тоже no-resolve
-    ("whitelist", "geoip", "DIRECT", "whitelist-ips.list",  True),
-    # direct: ~35k РФ+BY CIDR — страховка для приложений коннектящихся по IP напрямую
-    # (для доменных соединений не работает — Shadowrocket не резолвит домены при rule lookup)
-    ("direct",    "geoip", "DIRECT", "direct-ips.list",    False),
+    ("private", "geoip", "DIRECT", "private-ips.list", True),
+    ("whitelist", "geoip", "DIRECT", "whitelist-ips.list", True),
+    # direct-ips нужен только для прямых IP-коннектов, поэтому DNS-резолв тут не нужен.
+    ("direct", "geoip", "DIRECT", "direct-ips.list", True),
 ]
 
-# ─── plain-URL источники (обычные текстовые списки доменов, не geosite) ─────
-# Формат: (url, action, output_filename)
-# Каждая строка источника — просто домен без префикса, конвертируется в DOMAIN-SUFFIX
+# Дополнительный слой. Это не часть roscomvpn-routing, поэтому README описывает его отдельно.
 PLAIN_URL_RULES = [
-    # 2633⭐ hxehex/russia-mobile-internet-whitelist — живой список российских
-    # сервисов (Сбербанк, Госуслуги, Почта, РЖД, ВКонтакте и др.),
-    # обновляется ежедневно. Решает проблему доменов отсутствующих в roscomvpn-geosite.
     (
         "https://raw.githubusercontent.com/hxehex/russia-mobile-internet-whitelist/main/whitelist.txt",
         "DIRECT",
         "hxehex-whitelist.list",
     ),
 ]
+
+
+def fetch_text(url: str, timeout: int = 30) -> str:
+    request = Request(url, headers={"User-Agent": USER_AGENT})
+    try:
+        with urlopen(request, timeout=timeout) as response:
+            charset = response.headers.get_content_charset() or "utf-8"
+            text = response.read().decode(charset, errors="replace")
+    except (HTTPError, URLError, TimeoutError) as exc:
+        raise SourceError(f"не удалось загрузить {url}: {exc}") from exc
+
+    if not text.strip():
+        raise SourceError(f"источник пустой: {url}")
+    return text
+
+
+def unique(entries: list[str]) -> list[str]:
+    result = []
+    seen = set()
+    for entry in entries:
+        if entry not in seen:
+            seen.add(entry)
+            result.append(entry)
+    return result
+
+
+def normalize_domain(value: str) -> str:
+    domain = value.split("@", 1)[0].strip().lower().strip(",;")
+    domain = domain.removeprefix("*.").removeprefix(".").rstrip(".")
+    return domain if DOMAIN_RE.match(domain) else ""
+
+
+def normalize_keyword(value: str) -> str:
+    keyword = value.split("@", 1)[0].strip().lower().strip(",;")
+    if not keyword or "," in keyword or any(ch.isspace() for ch in keyword):
+        return ""
+    return keyword
+
 
 # ─── парсер plain-text доменных списков ─────────────────────────────────────
 
@@ -99,93 +144,120 @@ def fetch_plain_domains(url: str) -> list[str]:
     - один домен на строку;
     - много доменов в одной строке через пробел.
     """
-    r = requests.get(url, timeout=30)
-    if r.status_code != 200:
-        print(f" WARN: {url} → HTTP {r.status_code}")
-        return []
-
+    text = fetch_text(url, timeout=30)
     entries = []
-    seen = set()
 
-    for line in r.text.splitlines():
-        # убираем комментарии после #
+    for line in text.splitlines():
         line = line.split("#", 1)[0]
-
-        # режем не только по строкам, но и по пробелам/табам
         for raw in re.split(r"\s+", line):
-            domain = raw.strip().lower().strip(",;")
-            if not domain:
-                continue
+            domain = normalize_domain(raw)
+            if domain:
+                entries.append(f"DOMAIN-SUFFIX,{domain}")
 
-            if re.match(r"^[a-z0-9]([a-z0-9\-\.]*[a-z0-9])?\.[a-z]{2,}$", domain):
-                if domain not in seen:
-                    seen.add(domain)
-                    entries.append(f"DOMAIN-SUFFIX,{domain}")
+    return unique(entries)
 
-    return entries
 
 # ─── парсер geosite source-формата ───────────────────────────────────────────
 
-def fetch_geosite(category: str) -> list[str]:
-    """Загружает data/<category> через GitHub API и конвертирует в Shadowrocket-строки."""
-    url = GEOSITE_API.format(category)
-    r = requests.get(url, timeout=30)
-    if r.status_code != 200:
-        print(f"  WARN: {category} → HTTP {r.status_code}")
-        return []
+def geosite_line_to_shadowrocket(line: str) -> str:
+    line = line.split("#", 1)[0].strip()
+    if not line or line.startswith("@"):
+        return ""
 
-    content = base64.b64decode(r.json()["content"]).decode("utf-8", errors="replace")
+    if line.startswith("full:"):
+        domain = normalize_domain(line[5:])
+        return f"DOMAIN,{domain}" if domain else ""
+
+    if line.startswith("domain:"):
+        domain = normalize_domain(line[7:])
+        return f"DOMAIN-SUFFIX,{domain}" if domain else ""
+
+    if line.startswith("keyword:"):
+        keyword = normalize_keyword(line[8:])
+        return f"DOMAIN-KEYWORD,{keyword}" if keyword else ""
+
+    if line.startswith("regexp:"):
+        # Shadowrocket RULE-SET не поддерживает geosite regexp-строки.
+        return ""
+
+    domain = normalize_domain(line)
+    return f"DOMAIN-SUFFIX,{domain}" if domain else ""
+
+
+def fetch_geosite(category: str, seen_categories: set[str] | None = None) -> list[str]:
+    """Загружает data/<category> и конвертирует в Shadowrocket-строки."""
+    if seen_categories is None:
+        seen_categories = set()
+    if category in seen_categories:
+        return []
+    seen_categories.add(category)
+
+    content = fetch_text(GEOSITE_DATA.format(category), timeout=30)
     lines = []
     for raw in content.splitlines():
         line = raw.strip()
         if not line or line.startswith("#") or line.startswith("@"):
             continue
         if line.startswith("include:"):
-            # рекурсивно подтягиваем вложенные категории
-            sub = line[8:].strip().lower()
-            lines.extend(fetch_geosite(sub))
-        elif line.startswith("full:"):
-            lines.append(f"DOMAIN,{line[5:].strip()}")
-        elif line.startswith("domain:"):
-            lines.append(f"DOMAIN-SUFFIX,{line[7:].strip()}")
-        elif line.startswith("keyword:"):
-            lines.append(f"DOMAIN-KEYWORD,{line[8:].strip()}")
-        elif line.startswith("regexp:"):
-            # regexp не поддерживается в RULE-SET, пропускаем
-            pass
-        else:
-            # просто домен без префикса
-            if re.match(r"^[a-zA-Z0-9]([a-zA-Z0-9\-\.]+)\.[a-zA-Z]{2,}$", line):
-                lines.append(f"DOMAIN-SUFFIX,{line}")
-    return lines
+            sub = line[8:].split("@", 1)[0].strip().lower()
+            if sub:
+                lines.extend(fetch_geosite(sub, seen_categories))
+            continue
+
+        rule = geosite_line_to_shadowrocket(line)
+        if rule:
+            lines.append(rule)
+
+    return unique(lines)
+
 
 # ─── парсер geoip text-формата ───────────────────────────────────────────────
 
 def fetch_geoip(name: str, no_resolve: bool = True) -> list[str]:
     """Загружает release/text/<name>.txt и конвертирует CIDR в IP-CIDR строки."""
-    url = GEOIP_TEXT.format(f"{name}.txt")
-    r = requests.get(url, timeout=60)
-    if r.status_code != 200:
-        print(f"  WARN: geoip/{name} → HTTP {r.status_code}")
-        return []
+    text = fetch_text(GEOIP_TEXT.format(f"{name}.txt"), timeout=60)
 
     suffix = ",no-resolve" if no_resolve else ""
     lines = []
-    for raw in r.text.splitlines():
-        cidr = raw.strip()
-        if not cidr or cidr.startswith("#"):
+    for raw in text.splitlines():
+        cidr = raw.split("#", 1)[0].strip()
+        if not cidr:
             continue
-        # базовая валидация CIDR
-        if re.match(r"^\d{1,3}(\.\d{1,3}){3}/\d{1,2}$", cidr):
-            lines.append(f"IP-CIDR,{cidr}{suffix}")
-        elif re.match(r"^[0-9a-fA-F:]+/\d{1,3}$", cidr):
-            lines.append(f"IP-CIDR6,{cidr}{suffix}")
-    return lines
+        try:
+            network = ipaddress.ip_network(cidr, strict=False)
+        except ValueError:
+            continue
+
+        rule_type = "IP-CIDR6" if network.version == 6 else "IP-CIDR"
+        lines.append(f"{rule_type},{network.with_prefixlen}{suffix}")
+
+    return unique(lines)
+
+
+def ensure_entries(label: str, entries: list[str]) -> None:
+    if not entries:
+        raise SourceError(f"{label}: после конвертации не осталось правил")
+
+
+def validate_action_conflicts(generated: list[tuple[str, str, list[str]]]) -> None:
+    seen = {}
+    for filename, action, entries in generated:
+        for entry in entries:
+            key = entry.removesuffix(",no-resolve")
+            previous = seen.get(key)
+            if previous and previous[0] != action:
+                raise SourceError(
+                    "конфликт действий для правила "
+                    f"{key}: {previous[1]}={previous[0]}, {filename}={action}"
+                )
+            seen[key] = (action, filename)
+
 
 # ─── запись .list файлов ──────────────────────────────────────────────────────
 
-def write_list(filename: str, entries: list[str], source: str):
+def write_list(filename: str, entries: list[str], source: str) -> None:
     os.makedirs(OUTPUT_DIR, exist_ok=True)
+    entries = unique(entries)
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     header = [
         f"# NAME: {filename}",
@@ -195,21 +267,22 @@ def write_list(filename: str, entries: list[str], source: str):
         "",
     ]
     path = os.path.join(OUTPUT_DIR, filename)
-    with open(path, "w") as f:
+    with open(path, "w", encoding="utf-8") as f:
         f.write("\n".join(header + entries) + "\n")
     print(f"  ✓ lists/{filename}  ({len(entries)} rules)")
 
+
 # ─── генератор .conf ─────────────────────────────────────────────────────────
 
-def build_conf(domain_rules, ip_rules):
+def build_conf(domain_rules, ip_rules) -> str:
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
-    # Находим private-ips для вставки первым правилом
     private_ip = next((r for r in ip_rules if r[3] == "private-ips.list"), None)
     other_ip_rules = [r for r in ip_rules if r[3] != "private-ips.list"]
 
-    general = f"""# roscomvpn-shadowrocket — auto-generated {now}
-# Source: https://github.com/hydraponique/roscomvpn-routing
+    general = f"""# roscomvpn-shadowrocket - auto-generated {now}
+# Routing baseline: https://github.com/hydraponique/roscomvpn-routing
+# Rule sources: roscomvpn-geosite, roscomvpn-geoip, hxehex/russia-mobile-internet-whitelist
 # Repo:   https://github.com/{GITHUB_REPO}
 
 [General]
@@ -221,8 +294,7 @@ dns-direct-system = false
 dns-fallback-system = true
 dns-direct-fallback-proxy = true
 
-# Яндекс DNS для прямого трафика (работает везде в РФ)
-# Google DNS для проксированного трафика
+# Яндекс DNS для прямого трафика, Google DNS для проксированного трафика
 dns-server = https://77.88.8.8/dns-query, https://8.8.8.8/dns-query
 fallback-dns-server = system
 hijack-dns = :53
@@ -242,7 +314,6 @@ update-url = {CONF_URL}
 
     rule_lines = ["", "[Rule]"]
 
-    # ── 0. private-ips первым (быстрый выход для локальной сети) ──────────────
     if private_ip:
         _, _, _, outfile, _ = private_ip
         url = f"{RAW_BASE}/{outfile}"
@@ -250,16 +321,14 @@ update-url = {CONF_URL}
         rule_lines.append(f"RULE-SET,{url},DIRECT,no-resolve")
         rule_lines.append("")
 
-    # ── 1-3. Все остальные правила (BLOCK → PROXY → DIRECT) ──────────────────
     all_rules = domain_rules + other_ip_rules
     processed_actions = []
 
-    for name, rtype, act, outfile, *flags in all_rules:
+    for _, _, act, outfile, *flags in all_rules:
         no_resolve = flags[0] if flags else False
-        # Вставляем заголовок группы при смене action
         headers = {
             "REJECT": "# ═══ BLOCK ═══════════════════════════════════════════",
-            "PROXY":  "# ═══ PROXY (через VPN) ══════════════════════════════",
+            "PROXY": "# ═══ PROXY (через VPN) ══════════════════════════════",
             "DIRECT": "# ═══ DIRECT (напрямую) ══════════════════════════════",
         }
         if act not in processed_actions:
@@ -267,29 +336,23 @@ update-url = {CONF_URL}
             processed_actions.append(act)
 
         url = f"{RAW_BASE}/{outfile}"
-        if no_resolve:
-            rule_lines.append(f"RULE-SET,{url},{act},no-resolve")
-        else:
-            rule_lines.append(f"RULE-SET,{url},{act}")
+        suffix = ",no-resolve" if no_resolve else ""
+        rule_lines.append(f"RULE-SET,{url},{act}{suffix}")
 
-    # ── 3.5. Plain-URL источники (hxehex и др.) ─────────────────────────────
     if PLAIN_URL_RULES:
         rule_lines.append("")
-        rule_lines.append("# ── Дополнительные DIRECT-домены (не покрытые roscomvpn-geosite) ──")
+        rule_lines.append("# ── Дополнительные DIRECT-домены из RU-whitelist ──")
         for _, _, outfile in PLAIN_URL_RULES:
-            list_url = f"{RAW_BASE}/{outfile}"
-            rule_lines.append(f"RULE-SET,{list_url},DIRECT")
+            rule_lines.append(f"RULE-SET,{RAW_BASE}/{outfile},DIRECT")
 
-    # ── 4. GEOIP catch-all для РФ/BY доменов не попавших в списки ────────────
     rule_lines.append("")
-    rule_lines.append("# ── GEOIP: страховка для РФ/BY доменов вне category-ru ──")
+    rule_lines.append("# ── GEOIP: fallback для РФ/BY адресов вне списков ──")
     rule_lines.append("GEOIP,RU,DIRECT")
     rule_lines.append("GEOIP,BY,DIRECT")
     rule_lines.append("")
     rule_lines.append("FINAL,PROXY")
     rule_lines.append("")
 
-    # Убираем дублирующиеся пустые строки
     result_lines = []
     prev_empty = False
     for line in rule_lines:
@@ -297,68 +360,69 @@ update-url = {CONF_URL}
             if not prev_empty:
                 result_lines.append(line)
             prev_empty = True
-        else:
-            result_lines.append(line)
-            prev_empty = False
+            continue
+        result_lines.append(line)
+        prev_empty = False
 
     return general + "\n".join(result_lines)
 
+
 # ─── main ─────────────────────────────────────────────────────────────────────
 
-def main():
-    print("=== Генерация Shadowrocket конфига из roscomvpn-routing ===\n")
+def main() -> None:
+    print("=== Генерация Shadowrocket-адаптации RoscomVPN ===\n")
+    generated = []
 
-    # 1. Конвертируем geosite категории
     print("── Domain lists (geosite) ─────────────────────────────")
     for name, rtype, action, outfile in DOMAIN_RULES:
         if rtype != "geosite":
             continue
         print(f"  Fetching geosite/{name}...")
         entries = fetch_geosite(name)
-        if not entries:
-            print(f"  SKIP: {name} (empty)")
-            continue
+        ensure_entries(f"geosite/{name}", entries)
         write_list(
             outfile,
             entries,
-            f"https://github.com/hydraponique/roscomvpn-geosite/blob/master/data/{name}"
+            f"https://github.com/hydraponique/roscomvpn-geosite/blob/master/data/{name}",
         )
+        generated.append((outfile, action, entries))
 
-    # 2. Конвертируем geoip IP-листы
     print("\n── IP lists (geoip) ───────────────────────────────────")
     for name, rtype, action, outfile, no_resolve in IP_RULES:
         if rtype != "geoip":
             continue
         print(f"  Fetching geoip/{name}.txt (no-resolve={no_resolve})...")
         entries = fetch_geoip(name, no_resolve=no_resolve)
-        if not entries:
-            print(f"  SKIP: {name} (empty)")
-            continue
+        ensure_entries(f"geoip/{name}", entries)
         write_list(
             outfile,
             entries,
-            f"https://github.com/hydraponique/roscomvpn-geoip/blob/master/release/text/{name}.txt"
+            f"https://github.com/hydraponique/roscomvpn-geoip/blob/master/release/text/{name}.txt",
         )
+        generated.append((outfile, action, entries))
 
-    # 2.5 Генерируем plain-URL списки (hxehex и др.)
     if PLAIN_URL_RULES:
         print("\n── Plain-URL domain lists ─────────────────────────────")
-        for src_url, _, outfile in PLAIN_URL_RULES:
+        for src_url, action, outfile in PLAIN_URL_RULES:
             print(f"  Fetching {src_url}...")
             entries = fetch_plain_domains(src_url)
-            if not entries:
-                print(f"  SKIP: {outfile} (empty)")
-                continue
+            ensure_entries(outfile, entries)
             write_list(outfile, entries, src_url)
+            generated.append((outfile, action, entries))
 
-    # 3. Генерируем .conf
+    validate_action_conflicts(generated)
+
     print("\n── Генерация roscomvpn.conf ───────────────────────────")
     conf_content = build_conf(DOMAIN_RULES, IP_RULES)
-    with open(CONF_PATH, "w") as f:
+    with open(CONF_PATH, "w", encoding="utf-8") as f:
         f.write(conf_content)
-    print(f"  ✓ roscomvpn.conf")
+    print("  ✓ roscomvpn.conf")
 
     print("\n=== Готово! ===")
 
+
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except SourceError as exc:
+        raise SystemExit(f"ERROR: {exc}") from exc

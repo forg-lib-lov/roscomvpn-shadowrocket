@@ -1,7 +1,7 @@
 # NAME: hxehex-whitelist.list
 # SOURCE: https://raw.githubusercontent.com/hxehex/russia-mobile-internet-whitelist/main/whitelist.txt
-# UPDATED: 2026-06-07 09:18 UTC
-# TOTAL: 907
+# UPDATED: 2026-06-07 15:52 UTC
+# TOTAL: 908
 
 DOMAIN-SUFFIX,00.img.avito.st
 DOMAIN-SUFFIX,01.img.avito.st
@@ -899,6 +899,7 @@ DOMAIN-SUFFIX,www.t2.ru
 DOMAIN-SUFFIX,www.vtb.ru
 DOMAIN-SUFFIX,www.wf.mail.ru
 DOMAIN-SUFFIX,xapi.ozon.ru
+DOMAIN-SUFFIX,xn--80ajghhoc2aj1c8b.xn--p1ai
 DOMAIN-SUFFIX,ya.ru
 DOMAIN-SUFFIX,yabro-wbplugin.edadeal.yandex.ru
 DOMAIN-SUFFIX,yabs.yandex.ru

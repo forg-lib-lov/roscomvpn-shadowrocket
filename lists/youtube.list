@@ -1,9 +1,8 @@
 # NAME: youtube.list
 # SOURCE: https://github.com/hydraponique/roscomvpn-geosite/blob/master/data/youtube
-# UPDATED: 2026-06-07 09:18 UTC
-# TOTAL: 177
+# UPDATED: 2026-06-07 15:52 UTC
+# TOTAL: 176
 
-DOMAIN-SUFFIX,youtube
 DOMAIN-SUFFIX,ggpht.cn
 DOMAIN-SUFFIX,ggpht.com
 DOMAIN-SUFFIX,googlevideo.com

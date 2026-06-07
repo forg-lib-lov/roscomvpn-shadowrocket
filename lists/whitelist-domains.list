@@ -1,7 +1,7 @@
 # NAME: whitelist-domains.list
 # SOURCE: https://github.com/hydraponique/roscomvpn-geosite/blob/master/data/whitelist
-# UPDATED: 2026-06-07 09:18 UTC
-# TOTAL: 467
+# UPDATED: 2026-06-07 15:52 UTC
+# TOTAL: 465
 
 DOMAIN-SUFFIX,ipify.org
 DOMAIN-SUFFIX,checkip.amazonaws.com
@@ -106,7 +106,6 @@ DOMAIN-SUFFIX,omsk.ru
 DOMAIN-SUFFIX,orb.ru
 DOMAIN-SUFFIX,oryol.ru
 DOMAIN-SUFFIX,penza.ru
-DOMAIN-SUFFIX,psk
 DOMAIN-SUFFIX,psk.ru
 DOMAIN-SUFFIX,pskov.ru
 DOMAIN-SUFFIX,rnd.ru
@@ -410,7 +409,6 @@ DOMAIN-SUFFIX,xn--b1aew.xn--p1ai
 DOMAIN-SUFFIX,xn--d1acpjx3f.xn--p1ai
 DOMAIN-SUFFIX,ya.ru
 DOMAIN-SUFFIX,yads.tech
-DOMAIN-SUFFIX,yandex
 DOMAIN-SUFFIX,yandex-bank.net
 DOMAIN-SUFFIX,yandex-images.clstorage.net
 DOMAIN-SUFFIX,yandex-team.ru

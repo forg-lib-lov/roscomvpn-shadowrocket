@@ -1,7 +1,7 @@
 # NAME: origin.list
 # SOURCE: https://github.com/hydraponique/roscomvpn-geosite/blob/master/data/origin
-# UPDATED: 2026-06-07 09:18 UTC
-# TOTAL: 160
+# UPDATED: 2026-06-07 15:52 UTC
+# TOTAL: 154
 
 DOMAIN-SUFFIX,dawngate.com
 DOMAIN-SUFFIX,eastore.com
@@ -22,7 +22,6 @@ DOMAIN-SUFFIX,chillingo.com
 DOMAIN-SUFFIX,commandandconquer.com
 DOMAIN-SUFFIX,conquerwithcharacter.com
 DOMAIN-SUFFIX,crysis.jp
-DOMAIN-SUFFIX,dawngate.com
 DOMAIN-SUFFIX,dawngatechronicles.com
 DOMAIN-SUFFIX,dicela.com
 DOMAIN-SUFFIX,dicela.net
@@ -80,14 +79,11 @@ DOMAIN-SUFFIX,yogify.com
 DOMAIN-SUFFIX,anthemgame.com
 DOMAIN-SUFFIX,anthemthegame.com
 DOMAIN-SUFFIX,apexlegends.com
-DOMAIN-SUFFIX,projectapex.com
 DOMAIN-SUFFIX,bioware.com
 DOMAIN-SUFFIX,biowarestore.com
 DOMAIN-SUFFIX,eamythic.com
 DOMAIN-SUFFIX,eamythic.net
 DOMAIN-SUFFIX,cncrivals.com
-DOMAIN-SUFFIX,commandandconquer.com
-DOMAIN-SUFFIX,tiberiumalliances.com
 DOMAIN-SUFFIX,camelot-europe.com
 DOMAIN-SUFFIX,camelotherald.com
 DOMAIN-SUFFIX,camelotherald.net
@@ -135,12 +131,10 @@ DOMAIN-SUFFIX,nfsworld.com
 DOMAIN-SUFFIX,teamneedforspeed.com
 DOMAIN-SUFFIX,plantsvszombies2.com
 DOMAIN-SUFFIX,pvzgw2.com
-DOMAIN-SUFFIX,pvzheroes.com
 DOMAIN-SUFFIX,seaofsolitude.com
 DOMAIN-SUFFIX,simcity-buildit.com
 DOMAIN-SUFFIX,simcity.com
 DOMAIN-SUFFIX,skate2.com
-DOMAIN-SUFFIX,spearhead.kr
 DOMAIN-SUFFIX,starwarsfallenorder.com
 DOMAIN-SUFFIX,starwarsjedifallenorder.com
 DOMAIN-SUFFIX,starwarstheoldrepublic.com

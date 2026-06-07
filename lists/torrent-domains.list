@@ -1,7 +1,7 @@
 # NAME: torrent-domains.list
 # SOURCE: https://github.com/hydraponique/roscomvpn-geosite/blob/master/data/torrent
-# UPDATED: 2026-06-07 09:18 UTC
-# TOTAL: 434
+# UPDATED: 2026-06-07 15:52 UTC
+# TOTAL: 431
 
 DOMAIN-SUFFIX,dht.aelitis.com
 DOMAIN-SUFFIX,dht.transmissionbt.com
@@ -315,7 +315,6 @@ DOMAIN-SUFFIX,tracker.vulnix.sh
 DOMAIN-SUFFIX,tracker.ygsub.com
 DOMAIN-SUFFIX,tracker.yoshi210.com
 DOMAIN-SUFFIX,tracker.zemoj.com
-DOMAIN-SUFFIX,tracker.zerobytes.xyz
 DOMAIN-SUFFIX,tracker.zum.bi
 DOMAIN-SUFFIX,tracker0.ufibox.com
 DOMAIN-SUFFIX,tracker01.loveapp.com
@@ -344,10 +343,8 @@ DOMAIN-SUFFIX,w.wwwww.wtf
 DOMAIN-SUFFIX,wareztorrent.com
 DOMAIN-SUFFIX,wassermann.online
 DOMAIN-SUFFIX,worldboxingvideoarchive.com
-DOMAIN-SUFFIX,loushao.net
 DOMAIN-SUFFIX,midea123.z-media.com.cn
 DOMAIN-SUFFIX,torrent.eu.org
-DOMAIN-SUFFIX,wareztorrent.com
 DOMAIN-SUFFIX,xwt-classics.net
 DOMAIN-SUFFIX,xxxtor.com
 DOMAIN-SUFFIX,yuwabits.net
