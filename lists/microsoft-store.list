@@ -1,6 +1,6 @@
 # NAME: microsoft-store.list
 # SOURCE: manual PROXY overrides
-# UPDATED: 2026-06-07 23:02 UTC
+# UPDATED: 2026-06-07 23:03 UTC
 # TOTAL: 9
 
 DOMAIN-SUFFIX,apps.microsoft.com
