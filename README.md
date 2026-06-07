@@ -62,7 +62,7 @@ https://github.com/P3TERX/GeoLite.mmdb/raw/download/GeoLite2-Country.mmdb
 
 Конфиг в репозитории обновляется каждый день в 09:00 MSK через GitHub Actions.
 
-После публикации изменений GitHub Actions автоматически очищает кеш jsDelivr для `roscomvpn.conf` и всех подключённых `lists/*.list`, чтобы Shadowrocket быстрее получал свежую версию.
+После публикации изменений GitHub Actions автоматически очищает кеш jsDelivr для `roscomvpn.conf` и всех подключённых `lists/*.list`, а потом проверяет, что CDN действительно отдаёт свежие файлы. Если jsDelivr всё ещё отдаёт старую версию, Action повторит очистку и упадёт с ошибкой, чтобы проблема была видна сразу.
 
 Вручную: `Configurations` → свайп влево по конфигу → `Update Config`.
 
