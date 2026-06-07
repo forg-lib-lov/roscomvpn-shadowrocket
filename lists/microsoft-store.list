@@ -1,0 +1,14 @@
+# NAME: microsoft-store.list
+# SOURCE: manual PROXY overrides
+# UPDATED: 2026-06-07 21:14 UTC
+# TOTAL: 9
+
+DOMAIN-SUFFIX,apps.microsoft.com
+DOMAIN-SUFFIX,get.microsoft.com
+DOMAIN-SUFFIX,displaycatalog.mp.microsoft.com
+DOMAIN-SUFFIX,purchase.md.mp.microsoft.com
+DOMAIN-SUFFIX,licensing.mp.microsoft.com
+DOMAIN-SUFFIX,storeedgefd.dsx.mp.microsoft.com
+DOMAIN-SUFFIX,dl.delivery.mp.microsoft.com
+DOMAIN-SUFFIX,store-images.s-microsoft.com
+DOMAIN-SUFFIX,img-prod-cms-rt-microsoft-com.akamaized.net

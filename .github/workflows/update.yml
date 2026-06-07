@@ -25,13 +25,11 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install dependencies
-        run: pip install requests
-
       - name: Run converter
         env:
           # Автоматически передаём owner/repo текущего репозитория
           GITHUB_REPO: ${{ github.repository }}
+          GITHUB_BRANCH: ${{ github.ref_name }}
         run: python scripts/generate.py
 
       - name: Commit and push if changed
@@ -40,5 +38,5 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add lists/ roscomvpn.conf
           # Коммитим только если что-то изменилось
-          git diff --staged --quiet || git commit -m "chore: auto-update from roscomvpn-routing [$(date -u '+%Y-%m-%d')]"
+          git diff --staged --quiet || git commit -m "chore: auto-update generated rules [$(date -u '+%Y-%m-%d')]"
           git push

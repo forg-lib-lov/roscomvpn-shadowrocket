@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Shadowrocket-адаптация DEFAULT-профиля roscomvpn-routing.
-Источники списков: roscomvpn-geosite, roscomvpn-geoip и дополнительный RU-whitelist.
+Источники списков: roscomvpn-geosite, roscomvpn-geoip, v2fly и дополнительный RU-whitelist.
 """
 
 from __future__ import annotations
@@ -17,6 +17,7 @@ from urllib.request import Request, urlopen
 
 GEOSITE_DATA = "https://raw.githubusercontent.com/hydraponique/roscomvpn-geosite/master/data/{}"
 GEOIP_TEXT = "https://raw.githubusercontent.com/hydraponique/roscomvpn-geoip/master/release/text/{}"
+V2FLY_DATA = "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/{}"
 
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "..", "lists")
 CONF_PATH = os.path.join(os.path.dirname(__file__), "..", "roscomvpn.conf")
@@ -50,20 +51,21 @@ class SourceError(RuntimeError):
 # ПОРЯДОК ВАЖЕН! Shadowrocket обрабатывает правила сверху вниз:
 # 0. private-ips — локальная сеть
 # 1. REJECT      — блокировка
-# 2. PROXY       — сервисы через VPN
-# 3. DIRECT      — российские/локальные/игровые сервисы напрямую
+# 2. PROXY       — сервисы через VPN, включая ручные исключения
+# 3. DIRECT      — российские/локальные/игровые сервисы и ручные DIRECT-исключения
 
 DOMAIN_RULES = [
     # BLOCK
     ("win-spy", "geosite", "REJECT", "win-spy.list"),
-    ("category-ads", "geosite", "REJECT", "category-ads.list"),
-    # PROXY — порядок выровнен с DEFAULT-профилем roscomvpn-routing
+    # PROXY — базовые правила roscomvpn-routing и ручные VPN-исключения
     ("google-play", "geosite", "PROXY", "google-play.list"),
-    ("twitch-ads", "geosite", "PROXY", "twitch-ads.list"),
     ("youtube", "geosite", "PROXY", "youtube.list"),
     ("telegram", "geosite", "PROXY", "telegram.list"),
     ("github", "geosite", "PROXY", "github.list"),
+    ("force-proxy", "v2fly-force", "PROXY", "force-proxy.list"),
+    ("microsoft-store", "manual-proxy", "PROXY", "microsoft-store.list"),
     # DIRECT
+    ("manual-direct", "manual", "DIRECT", "manual-direct.list"),
     ("private", "geosite", "DIRECT", "private-domains.list"),
     ("torrent", "geosite", "DIRECT", "torrent-domains.list"),
     ("epicgames", "geosite", "DIRECT", "epicgames.list"),
@@ -94,6 +96,31 @@ PLAIN_URL_RULES = [
         "DIRECT",
         "hxehex-whitelist.list",
     ),
+]
+
+FORCE_PROXY_CATEGORIES = [
+    "openai",
+    "instagram",
+    "facebook",
+    "tiktok",
+]
+
+MANUAL_DIRECT_DOMAINS = [
+    # Пользовательские исключения: эти сайты должны открываться напрямую.
+    "autowp.ru",
+    "appstorrent.ru",
+]
+
+MICROSOFT_STORE_PROXY_DOMAINS = [
+    "apps.microsoft.com",
+    "get.microsoft.com",
+    "displaycatalog.mp.microsoft.com",
+    "purchase.md.mp.microsoft.com",
+    "licensing.mp.microsoft.com",
+    "storeedgefd.dsx.mp.microsoft.com",
+    "dl.delivery.mp.microsoft.com",
+    "store-images.s-microsoft.com",
+    "img-prod-cms-rt-microsoft-com.akamaized.net",
 ]
 
 
@@ -211,6 +238,51 @@ def fetch_geosite(category: str, seen_categories: set[str] | None = None) -> lis
     return unique(lines)
 
 
+def fetch_v2fly_category(category: str, seen_categories: set[str] | None = None) -> list[str]:
+    """Загружает v2fly/domain-list-community data/<category>."""
+    if seen_categories is None:
+        seen_categories = set()
+    if category in seen_categories:
+        return []
+    seen_categories.add(category)
+
+    content = fetch_text(V2FLY_DATA.format(category), timeout=30)
+    lines = []
+    for raw in content.splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#") or line.startswith("@"):
+            continue
+        if "@ads" in line:
+            continue
+        if line.startswith("include:"):
+            sub = line[8:].split("@", 1)[0].strip().lower()
+            if sub:
+                lines.extend(fetch_v2fly_category(sub, seen_categories))
+            continue
+
+        rule = geosite_line_to_shadowrocket(line)
+        if rule:
+            lines.append(rule)
+
+    return unique(lines)
+
+
+def fetch_v2fly_force_proxy(categories: list[str]) -> list[str]:
+    entries = []
+    for category in categories:
+        entries.extend(fetch_v2fly_category(category))
+    return unique(entries)
+
+
+def manual_domains_to_rules(domains: list[str]) -> list[str]:
+    entries = []
+    for value in domains:
+        domain = normalize_domain(value)
+        if domain:
+            entries.append(f"DOMAIN-SUFFIX,{domain}")
+    return unique(entries)
+
+
 # ─── парсер geoip text-формата ───────────────────────────────────────────────
 
 def fetch_geoip(name: str, no_resolve: bool = True) -> list[str]:
@@ -282,7 +354,7 @@ def build_conf(domain_rules, ip_rules) -> str:
 
     general = f"""# roscomvpn-shadowrocket - auto-generated {now}
 # Routing baseline: https://github.com/hydraponique/roscomvpn-routing
-# Rule sources: roscomvpn-geosite, roscomvpn-geoip, hxehex/russia-mobile-internet-whitelist
+# Rule sources: roscomvpn-geosite, roscomvpn-geoip, v2fly/domain-list-community, hxehex/russia-mobile-internet-whitelist, manual overrides
 # Repo:   https://github.com/{GITHUB_REPO}
 
 [General]
@@ -373,18 +445,29 @@ def main() -> None:
     print("=== Генерация Shadowrocket-адаптации RoscomVPN ===\n")
     generated = []
 
-    print("── Domain lists (geosite) ─────────────────────────────")
+    print("── Domain lists ───────────────────────────────────────")
     for name, rtype, action, outfile in DOMAIN_RULES:
-        if rtype != "geosite":
-            continue
-        print(f"  Fetching geosite/{name}...")
-        entries = fetch_geosite(name)
-        ensure_entries(f"geosite/{name}", entries)
-        write_list(
-            outfile,
-            entries,
-            f"https://github.com/hydraponique/roscomvpn-geosite/blob/master/data/{name}",
-        )
+        if rtype == "geosite":
+            print(f"  Fetching geosite/{name}...")
+            entries = fetch_geosite(name)
+            source = f"https://github.com/hydraponique/roscomvpn-geosite/blob/master/data/{name}"
+        elif rtype == "v2fly-force":
+            print(f"  Fetching force-proxy categories: {', '.join(FORCE_PROXY_CATEGORIES)}...")
+            entries = fetch_v2fly_force_proxy(FORCE_PROXY_CATEGORIES)
+            source = "https://github.com/v2fly/domain-list-community"
+        elif rtype == "manual":
+            print(f"  Building manual direct list...")
+            entries = manual_domains_to_rules(MANUAL_DIRECT_DOMAINS)
+            source = "manual DIRECT overrides"
+        elif rtype == "manual-proxy":
+            print(f"  Building manual proxy list for {name}...")
+            entries = manual_domains_to_rules(MICROSOFT_STORE_PROXY_DOMAINS)
+            source = "manual PROXY overrides"
+        else:
+            raise SourceError(f"неизвестный тип доменного списка: {rtype}")
+
+        ensure_entries(name, entries)
+        write_list(outfile, entries, source)
         generated.append((outfile, action, entries))
 
     print("\n── IP lists (geoip) ───────────────────────────────────")
