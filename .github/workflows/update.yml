@@ -41,81 +41,13 @@ jobs:
         run: python scripts/generate.py
 
       - name: Commit and push if changed
-        id: commit
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add lists/ roscomvpn.conf
           if git diff --staged --quiet; then
-            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No generated changes"
           else
             git commit -m "chore: auto-update generated rules [$(date -u '+%Y-%m-%d')]"
             git push
-            echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
-
-      - name: Purge and verify jsDelivr cache
-        if: steps.commit.outputs.changed == 'true' || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-        run: |
-          set -euo pipefail
-
-          # GitHub branch refs and jsDelivr edge caches are not always updated instantly
-          # after git push. A short delay can make jsDelivr re-cache stale branch content.
-          sleep 60
-
-          mapfile -t paths < <(
-            {
-              echo "roscomvpn.conf"
-              grep '^RULE-SET,' roscomvpn.conf \
-                | cut -d',' -f2 \
-                | sed 's#.*/lists/#lists/#'
-            } | sort -u
-          )
-
-          purge() {
-            local path="$1"
-            local url="https://purge.jsdelivr.net/gh/${GITHUB_REPOSITORY}@${GITHUB_REF_NAME}/${path}"
-            echo "Purging ${path}"
-            curl --fail --silent --show-error --retry 3 --retry-delay 5 "$url" >/dev/null
-          }
-
-          verify() {
-            local path="$1"
-            local tmp
-            tmp="$(mktemp)"
-            local url="https://cdn.jsdelivr.net/gh/${GITHUB_REPOSITORY}@${GITHUB_REF_NAME}/${path}"
-            curl --fail --silent --show-error --location --retry 3 --retry-delay 5 "$url" -o "$tmp"
-            if cmp -s "$path" "$tmp"; then
-              rm -f "$tmp"
-              echo "Verified ${path}"
-              return 0
-            fi
-            rm -f "$tmp"
-            echo "::warning::CDN is still stale for ${path}"
-            return 1
-          }
-
-          for attempt in 1 2 3; do
-            echo "jsDelivr purge attempt ${attempt}"
-            for path in "${paths[@]}"; do
-                purge "$path"
-            done
-
-            sleep 15
-
-            failed=0
-            for path in "${paths[@]}"; do
-              if ! verify "$path"; then
-                failed=1
-              fi
-            done
-
-            if [ "$failed" -eq 0 ]; then
-              exit 0
-            fi
-
-            sleep 45
-          done
-
-          echo "::error::jsDelivr cache did not update after retries"
-          exit 1

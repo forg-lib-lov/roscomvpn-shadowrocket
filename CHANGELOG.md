@@ -8,10 +8,10 @@
 - Добавлен `force-proxy.list` для важных зарубежных сервисов: ChatGPT/OpenAI, Instagram/Facebook и TikTok.
 - Telegram, YouTube, Google Play и GitHub по-прежнему идут через VPN отдельными списками.
 - Добавлен `microsoft-store.list`: Microsoft Store теперь идёт через VPN не только по `apps.microsoft.com`, но и по адресам каталога, лицензирования, картинок и скачивания пакетов.
-- Добавлен `manual-direct.list` для ручных DIRECT-исключений: `avto.ru`, `autowp.ru`, `appstorrent.ru`. `avto.ru` нужен для стилей и скриптов Журнала Auto.ru (`auto.ru/mag/`), которые грузятся с `st.avto.ru`.
+- Добавлен `manual-direct.list` для ручных DIRECT-исключений: `avto.ru`, `autowp.ru`, `appstorrent.ru`, `lava.ru`, `zr.ru`. `avto.ru` нужен для стилей и скриптов Журнала Auto.ru (`auto.ru/mag/`), которые грузятся с `st.avto.ru`; `lava.ru` и `zr.ru` добавлены, потому что их нет в текущих upstream DIRECT-списках.
 - Рекламные правила отключены: убраны общий `category-ads` REJECT-список и отдельный `twitch-ads` routing-слой. Это снижает риск сломать картинки, скрипты и вёрстку сайтов.
 - В README добавлено честное пояснение: `torrent-domains.list` помогает вести известные torrent-домены напрямую, но обычный доменный список не может гарантировать, что весь BitTorrent-обмен с пирами всегда пойдёт мимо VPN.
-- GitHub Actions теперь автоматически очищает кеш jsDelivr после обновления `roscomvpn.conf` и подключённых списков. Очистка усилена: Action ждёт обновления branch-ссылок, повторяет purge и проверяет, что CDN реально отдаёт свежие файлы.
+- Публикация переведена с jsDelivr на GitHub Raw. GitHub Actions теперь просто пересобирает `roscomvpn.conf` и `lists/*.list`, без очистки CDN-кеша и ожидания jsDelivr.
 
 ### Что нужно сделать пользователям
 
@@ -24,5 +24,5 @@ Configurations -> свайп по конфигу -> Update Config
 Если конфиг добавляется впервые, используйте ссылку:
 
 ```text
-https://cdn.jsdelivr.net/gh/forg-lib-lov/roscomvpn-shadowrocket@main/roscomvpn.conf
+https://raw.githubusercontent.com/forg-lib-lov/roscomvpn-shadowrocket/main/roscomvpn.conf
 ```

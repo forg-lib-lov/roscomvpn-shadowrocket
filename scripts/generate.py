@@ -27,7 +27,7 @@ GITHUB_REPO = os.environ.get("GITHUB_REPO", "forg-lib-lov/roscomvpn-shadowrocket
 GITHUB_BRANCH = os.environ.get("GITHUB_BRANCH", "main")
 PUBLISH_BASE = os.environ.get(
     "PUBLISH_BASE",
-    f"https://cdn.jsdelivr.net/gh/{GITHUB_REPO}@{GITHUB_BRANCH}",
+    f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}",
 ).rstrip("/")
 RAW_BASE = f"{PUBLISH_BASE}/lists"
 CONF_URL = f"{PUBLISH_BASE}/roscomvpn.conf"
@@ -111,6 +111,8 @@ MANUAL_DIRECT_DOMAINS = [
     "avto.ru",
     "autowp.ru",
     "appstorrent.ru",
+    "lava.ru",
+    "zr.ru",
 ]
 
 MICROSOFT_STORE_PROXY_DOMAINS = [

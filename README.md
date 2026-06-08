@@ -16,15 +16,17 @@
 
 ## Ручные исключения
 
-В конфиге есть два небольших ручных слоя.
+В конфиге есть несколько небольших дополнительных слоёв.
 
 `force-proxy.list` - важные зарубежные сервисы, которые должны идти через VPN явно: ChatGPT/OpenAI, Instagram/Facebook и TikTok. Telegram, YouTube, Google Play и GitHub тоже идут через VPN отдельными списками.
 
 `microsoft-store.list` - Microsoft Store через VPN: сайт `apps.microsoft.com`, каталог, лицензирование и домены скачивания пакетов.
 
-`manual-direct.list` - сайты, которые должны идти напрямую: `avto.ru`, `autowp.ru`, `appstorrent.ru`.
+`manual-direct.list` - сайты, которые должны идти напрямую: `avto.ru`, `autowp.ru`, `appstorrent.ru`, `lava.ru`, `zr.ru`.
 
 `avto.ru` добавлен отдельно из-за Журнала Auto.ru: сам сайт открывается на `auto.ru`, но стили и скрипты страницы `auto.ru/mag/` грузятся с похожего, но другого домена `st.avto.ru`. Без этого страница может открываться как голый текст с огромными картинками.
+
+`lava.ru` и `zr.ru` добавлены вручную, потому что их нет в текущих upstream DIRECT-списках. Без ручного доменного правила они зависят от `GEOIP,RU,DIRECT`, а такой запасной маршрут может ошибаться из-за CDN, устаревшей GeoLite2-базы или особенностей DNS.
 
 Google Play идёт через VPN не потому, что весь магазин полностью заблокирован. Бесплатные приложения обычно доступны, но платные приложения, платежи и часть обновлений для российских аккаунтов ограничены. Через VPN поведение Google Play обычно предсказуемее.
 
@@ -43,7 +45,7 @@ Torrent-домены из базового roscomvpn-списка идут на�
 Добавь готовый конфиг в Shadowrocket:
 
 ```text
-https://cdn.jsdelivr.net/gh/forg-lib-lov/roscomvpn-shadowrocket@main/roscomvpn.conf
+https://raw.githubusercontent.com/forg-lib-lov/roscomvpn-shadowrocket/main/roscomvpn.conf
 ```
 
 В Shadowrocket: `Configurations` → `+` → вставь URL → нажми на конфиг → `Use Config`.
@@ -62,31 +64,25 @@ https://github.com/P3TERX/GeoLite.mmdb/raw/download/GeoLite2-Country.mmdb
 
 Конфиг в репозитории обновляется каждый день в 09:00 MSK через GitHub Actions.
 
-После публикации изменений GitHub Actions автоматически очищает кеш jsDelivr для `roscomvpn.conf` и всех подключённых `lists/*.list`, а потом проверяет, что CDN действительно отдаёт свежие файлы. Если jsDelivr всё ещё отдаёт старую версию, Action повторит очистку и упадёт с ошибкой, чтобы проблема была видна сразу.
+После публикации изменений GitHub Actions пересобирает `roscomvpn.conf` и все подключённые `lists/*.list`. Файлы раздаются напрямую через GitHub Raw, без jsDelivr и отдельной очистки CDN-кеша.
 
 Вручную: `Configurations` → свайп влево по конфигу → `Update Config`.
 
 Автоматически: `Settings` → `Auto Update` → включи обновление конфигов и выставь интервал. Для фонового обновления в iOS должен быть включён `Background App Refresh` для Shadowrocket.
 
-`.list`-файлы подключены через CDN URL и обновляются Shadowrocket при применении или компиляции конфига.
-
-Если нужно срочно очистить CDN-кеш вручную, открой:
-
-```text
-https://purge.jsdelivr.net/gh/forg-lib-lov/roscomvpn-shadowrocket@main/roscomvpn.conf
-```
+`.list`-файлы подключены через GitHub Raw URL и обновляются Shadowrocket при применении или компиляции конфига.
 
 ## Кастомизация
 
-1. Сделай fork репозитория. Репозиторий должен быть публичным, если ты хочешь использовать jsDelivr URL.
+1. Сделай fork репозитория. Репозиторий должен быть публичным, если ты хочешь использовать GitHub Raw URL без авторизации.
 2. В своём репозитории открой `Actions` → `Update Shadowrocket Config` → `Run workflow`.
 3. Добавь свой конфиг в Shadowrocket:
 
 ```text
-https://cdn.jsdelivr.net/gh/YOUR_GITHUB_USERNAME/roscomvpn-shadowrocket@main/roscomvpn.conf
+https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/roscomvpn-shadowrocket/main/roscomvpn.conf
 ```
 
-Если у форка другая ветка, замени `@main` на её имя.
+Если у форка другая ветка, замени `/main/` в ссылке на имя своей ветки.
 
 Правила редактируются в `scripts/generate.py`. Основные списки:
 
@@ -115,6 +111,8 @@ MANUAL_DIRECT_DOMAINS = [
     "avto.ru",
     "autowp.ru",
     "appstorrent.ru",
+    "lava.ru",
+    "zr.ru",
 ]
 
 MICROSOFT_STORE_PROXY_DOMAINS = [
@@ -145,10 +143,10 @@ Shadowrocket ──► update-url ──► свежий roscomvpn.conf
              └─► RULE-SET URLs ──► списки правил
 ```
 
-По умолчанию опубликованные ссылки строятся через jsDelivr:
+По умолчанию опубликованные ссылки строятся через GitHub Raw:
 
 ```text
-https://cdn.jsdelivr.net/gh/{owner}/{repo}@{branch}/...
+https://raw.githubusercontent.com/{owner}/{repo}/{branch}/...
 ```
 
 Для нестандартной публикации можно задать переменные окружения:
@@ -157,7 +155,7 @@ https://cdn.jsdelivr.net/gh/{owner}/{repo}@{branch}/...
 |------------|------------|
 | `GITHUB_REPO` | `owner/repo` текущего репозитория |
 | `GITHUB_BRANCH` | ветка для публичных URL |
-| `PUBLISH_BASE` | полный базовый URL, если не нужен jsDelivr |
+| `PUBLISH_BASE` | полный базовый URL, если не нужен стандартный GitHub Raw |
 
 ## Структура файлов
 
