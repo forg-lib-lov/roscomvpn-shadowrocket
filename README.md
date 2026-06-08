@@ -22,11 +22,13 @@
 
 `microsoft-store.list` - Microsoft Store через VPN: сайт `apps.microsoft.com`, каталог, лицензирование и домены скачивания пакетов.
 
-`manual-direct.list` - сайты, которые должны идти напрямую: `avto.ru`, `autowp.ru`, `appstorrent.ru`, `lava.ru`, `zr.ru`.
+`manual-direct.list` - сайты, которые должны идти напрямую: `avto.ru`, `autowp.ru`, `appstorrent.ru`, `lava.ru`, `zr.ru`, `happ.su`, `happ.info`.
 
 `avto.ru` добавлен отдельно из-за Журнала Auto.ru: сам сайт открывается на `auto.ru`, но стили и скрипты страницы `auto.ru/mag/` грузятся с похожего, но другого домена `st.avto.ru`. Без этого страница может открываться как голый текст с огромными картинками.
 
 `lava.ru` и `zr.ru` добавлены вручную, потому что их нет в текущих upstream DIRECT-списках. Без ручного доменного правила они зависят от `GEOIP,RU,DIRECT`, а такой запасной маршрут может ошибаться из-за CDN, устаревшей GeoLite2-базы или особенностей DNS.
+
+Домены Happ `happ.su` и `happ.info` добавлены в ручные DIRECT-исключения, потому что сайт Happ может плохо открываться при текущем роутинге.
 
 Google Play идёт через VPN не потому, что весь магазин полностью заблокирован. Бесплатные приложения обычно доступны, но платные приложения, платежи и часть обновлений для российских аккаунтов ограничены. Через VPN поведение Google Play обычно предсказуемее.
 
@@ -113,6 +115,8 @@ MANUAL_DIRECT_DOMAINS = [
     "appstorrent.ru",
     "lava.ru",
     "zr.ru",
+    "happ.su",
+    "happ.info",
 ]
 
 MICROSOFT_STORE_PROXY_DOMAINS = [

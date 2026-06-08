@@ -9,6 +9,7 @@
 - Telegram, YouTube, Google Play и GitHub по-прежнему идут через VPN отдельными списками.
 - Добавлен `microsoft-store.list`: Microsoft Store теперь идёт через VPN не только по `apps.microsoft.com`, но и по адресам каталога, лицензирования, картинок и скачивания пакетов.
 - Добавлен `manual-direct.list` для ручных DIRECT-исключений: `avto.ru`, `autowp.ru`, `appstorrent.ru`, `lava.ru`, `zr.ru`. `avto.ru` нужен для стилей и скриптов Журнала Auto.ru (`auto.ru/mag/`), которые грузятся с `st.avto.ru`; `lava.ru` и `zr.ru` добавлены, потому что их нет в текущих upstream DIRECT-списках.
+- Домены Happ `happ.su` и `happ.info` добавлены в ручные DIRECT-исключения, потому что сайт Happ может плохо открываться при текущем роутинге.
 - Рекламные правила отключены: убраны общий `category-ads` REJECT-список и отдельный `twitch-ads` routing-слой. Это снижает риск сломать картинки, скрипты и вёрстку сайтов.
 - В README добавлено честное пояснение: `torrent-domains.list` помогает вести известные torrent-домены напрямую, но обычный доменный список не может гарантировать, что весь BitTorrent-обмен с пирами всегда пойдёт мимо VPN.
 - Публикация переведена с jsDelivr на GitHub Raw. GitHub Actions теперь просто пересобирает `roscomvpn.conf` и `lists/*.list`, без очистки CDN-кеша и ожидания jsDelivr.

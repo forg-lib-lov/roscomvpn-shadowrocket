@@ -113,6 +113,8 @@ MANUAL_DIRECT_DOMAINS = [
     "appstorrent.ru",
     "lava.ru",
     "zr.ru",
+    "happ.su",
+    "happ.info",
 ]
 
 MICROSOFT_STORE_PROXY_DOMAINS = [
