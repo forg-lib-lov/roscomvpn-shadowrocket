@@ -1,6 +1,6 @@
 # NAME: whitelist-ips.list
 # SOURCE: https://github.com/hydraponique/roscomvpn-geoip/blob/master/release/text/whitelist.txt
-# UPDATED: 2026-06-08 17:40 UTC
+# UPDATED: 2026-06-09 09:51 UTC
 # TOTAL: 6710
 
 IP-CIDR,5.8.43.1/32,no-resolve
