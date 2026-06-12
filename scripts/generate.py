@@ -105,25 +105,21 @@ FORCE_PROXY_CATEGORIES = [
     "tiktok",
 ]
 
+TAILSCALE_IPV4_ROUTE = "100.64.0.0/10"
+TAILSCALE_IPV6_ROUTE = "fd7a:115c:a1e0::/48"
+TAILSCALE_DNS_ROUTE = "100.100.100.100/32"
+
 SKIP_PROXY_ENTRIES = [
     "192.168.0.0/16",
     "10.0.0.0/8",
-    "100.64.0.0/10",
-    "fd7a:115c:a1e0::/48",
-    "100.100.100.100/32",
     "172.16.0.0/12",
     "localhost",
     "*.local",
-    "*.ts.net",
-    "*.tailscale.com",
     "captive.apple.com",
 ]
 
 TUN_EXCLUDED_ROUTES = [
     "10.0.0.0/8",
-    "100.64.0.0/10",
-    "fd7a:115c:a1e0::/48",
-    "100.100.100.100/32",
     "127.0.0.0/8",
     "169.254.0.0/16",
     "172.16.0.0/12",
@@ -139,9 +135,11 @@ TUN_EXCLUDED_ROUTES = [
 ]
 
 TAILSCALE_DIRECT_RULES = [
-    "IP-CIDR,100.64.0.0/10,DIRECT,no-resolve",
-    "IP-CIDR6,fd7a:115c:a1e0::/48,DIRECT,no-resolve",
-    "IP-CIDR,100.100.100.100/32,DIRECT,no-resolve",
+    # Do not add Tailscale peer routes to skip-proxy/tun-excluded-routes:
+    # Shadowrocket on macOS can turn them into LAN gateway routes and override Tailscale.
+    f"IP-CIDR,{TAILSCALE_IPV4_ROUTE},DIRECT,no-resolve",
+    f"IP-CIDR6,{TAILSCALE_IPV6_ROUTE},DIRECT,no-resolve",
+    f"IP-CIDR,{TAILSCALE_DNS_ROUTE},DIRECT,no-resolve",
     "DOMAIN-SUFFIX,ts.net,DIRECT",
     "DOMAIN-SUFFIX,tailscale.com,DIRECT",
 ]
