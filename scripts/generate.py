@@ -154,6 +154,11 @@ MANUAL_DIRECT_DOMAINS = [
     "zr.ru",
     "happ.su",
     "happ.info",
+    "static-2v.gitbook.com",
+    "api.gitbook.com",
+    "integrations.gitbook.com",
+    "ka-p.fontawesome.com",
+    "aliexpress.ru",
 ]
 
 MICROSOFT_STORE_PROXY_DOMAINS = [

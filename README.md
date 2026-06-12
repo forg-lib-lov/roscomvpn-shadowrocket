@@ -30,13 +30,15 @@ Tailscale peer-сеть `100.64.0.0/10` не добавляется в `skip-pro
 
 `microsoft-store.list` - Microsoft Store через VPN: сайт `apps.microsoft.com`, каталог, лицензирование и домены скачивания пакетов.
 
-`manual-direct.list` - сайты, которые должны идти напрямую: `avto.ru`, `autowp.ru`, `appstorrent.ru`, `lava.ru`, `zr.ru`, `happ.su`, `happ.info`.
+`manual-direct.list` - сайты, которые должны идти напрямую: `avto.ru`, `autowp.ru`, `appstorrent.ru`, `lava.ru`, `zr.ru`, Happ/GitBook-домены и `aliexpress.ru`.
 
 `avto.ru` добавлен отдельно из-за Журнала Auto.ru: сам сайт открывается на `auto.ru`, но стили и скрипты страницы `auto.ru/mag/` грузятся с похожего, но другого домена `st.avto.ru`. Без этого страница может открываться как голый текст с огромными картинками.
 
 `lava.ru` и `zr.ru` добавлены вручную, потому что их нет в текущих upstream DIRECT-списках. Без ручного доменного правила они зависят от `GEOIP,RU,DIRECT`, а такой запасной маршрут может ошибаться из-за CDN, устаревшей GeoLite2-базы или особенностей DNS.
 
-Домены Happ `happ.su` и `happ.info` добавлены в ручные DIRECT-исключения, потому что сайт Happ может плохо открываться при текущем роутинге.
+Домены Happ `happ.su`, `happ.info` и GitBook-ресурсы добавлены в ручные DIRECT-исключения, потому что сайт Happ может плохо открываться при текущем роутинге.
+
+`aliexpress.ru` добавлен в ручные DIRECT-исключения, потому что российская версия AliExpress может сбоить при маршрутизации через VPN. Глобальная `aliexpress.com`-версия этим правилом не затрагивается.
 
 Google Play идёт через VPN не потому, что весь магазин полностью заблокирован. Бесплатные приложения обычно доступны, но платные приложения, платежи и часть обновлений для российских аккаунтов ограничены. Через VPN поведение Google Play обычно предсказуемее.
 
@@ -125,6 +127,11 @@ MANUAL_DIRECT_DOMAINS = [
     "zr.ru",
     "happ.su",
     "happ.info",
+    "static-2v.gitbook.com",
+    "api.gitbook.com",
+    "integrations.gitbook.com",
+    "ka-p.fontawesome.com",
+    "aliexpress.ru",
 ]
 
 MICROSOFT_STORE_PROXY_DOMAINS = [
