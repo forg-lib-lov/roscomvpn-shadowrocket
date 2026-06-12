@@ -105,6 +105,20 @@ FORCE_PROXY_CATEGORIES = [
     "tiktok",
 ]
 
+SKIP_PROXY_ENTRIES = [
+    "192.168.0.0/16",
+    "10.0.0.0/8",
+    "100.64.0.0/10",
+    "fd7a:115c:a1e0::/48",
+    "100.100.100.100/32",
+    "172.16.0.0/12",
+    "localhost",
+    "*.local",
+    "*.ts.net",
+    "*.tailscale.com",
+    "captive.apple.com",
+]
+
 TUN_EXCLUDED_ROUTES = [
     "10.0.0.0/8",
     "100.64.0.0/10",
@@ -381,6 +395,7 @@ def write_list(filename: str, entries: list[str], source: str) -> None:
 
 def build_conf(domain_rules, ip_rules) -> str:
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    skip_proxy = ",".join(SKIP_PROXY_ENTRIES)
     tun_excluded_routes = ",".join(TUN_EXCLUDED_ROUTES)
 
     private_ip = next((r for r in ip_rules if r[3] == "private-ips.list"), None)
@@ -405,7 +420,7 @@ dns-server = https://77.88.8.8/dns-query, https://8.8.8.8/dns-query
 fallback-dns-server = system
 hijack-dns = :53
 
-skip-proxy = 192.168.0.0/16,10.0.0.0/8,172.16.0.0/12,localhost,*.local,captive.apple.com
+skip-proxy = {skip_proxy}
 tun-excluded-routes = {tun_excluded_routes}
 tun-included-routes =
 

@@ -18,7 +18,7 @@
 
 Конфиг явно пропускает Tailscale напрямую, чтобы Shadowrocket не перехватывал tailnet при одновременной работе с Tailscale на macOS.
 
-В `tun-excluded-routes` добавлены Tailscale-сети `100.64.0.0/10`, `fd7a:115c:a1e0::/48` и DNS-адрес `100.100.100.100/32`. В начале `[Rule]` также есть DIRECT-правила для этих адресов и доменов `ts.net` и `tailscale.com`.
+В `skip-proxy` и `tun-excluded-routes` добавлены Tailscale-сети `100.64.0.0/10`, `fd7a:115c:a1e0::/48` и DNS-адрес `100.100.100.100/32`. В начале `[Rule]` также есть DIRECT-правила для этих адресов и доменов `ts.net` и `tailscale.com`.
 
 Личные IP серверов не добавляются в общий конфиг: доступ к VPS внутри tailnet должен идти через Tailscale-адреса `100.x.y.z` или MagicDNS.
 
