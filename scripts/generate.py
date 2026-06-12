@@ -105,6 +105,33 @@ FORCE_PROXY_CATEGORIES = [
     "tiktok",
 ]
 
+TUN_EXCLUDED_ROUTES = [
+    "10.0.0.0/8",
+    "100.64.0.0/10",
+    "fd7a:115c:a1e0::/48",
+    "100.100.100.100/32",
+    "127.0.0.0/8",
+    "169.254.0.0/16",
+    "172.16.0.0/12",
+    "192.0.0.0/24",
+    "192.0.2.0/24",
+    "192.88.99.0/24",
+    "192.168.0.0/16",
+    "198.51.100.0/24",
+    "203.0.113.0/24",
+    "224.0.0.0/4",
+    "255.255.255.255/32",
+    "239.255.255.250/32",
+]
+
+TAILSCALE_DIRECT_RULES = [
+    "IP-CIDR,100.64.0.0/10,DIRECT,no-resolve",
+    "IP-CIDR6,fd7a:115c:a1e0::/48,DIRECT,no-resolve",
+    "IP-CIDR,100.100.100.100/32,DIRECT,no-resolve",
+    "DOMAIN-SUFFIX,ts.net,DIRECT",
+    "DOMAIN-SUFFIX,tailscale.com,DIRECT",
+]
+
 MANUAL_DIRECT_DOMAINS = [
     # Пользовательские исключения: эти сайты должны открываться напрямую.
     # Журнал Auto.ru грузит стили и скрипты с домена avto.ru, а не auto.ru.
@@ -354,6 +381,7 @@ def write_list(filename: str, entries: list[str], source: str) -> None:
 
 def build_conf(domain_rules, ip_rules) -> str:
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    tun_excluded_routes = ",".join(TUN_EXCLUDED_ROUTES)
 
     private_ip = next((r for r in ip_rules if r[3] == "private-ips.list"), None)
     other_ip_rules = [r for r in ip_rules if r[3] != "private-ips.list"]
@@ -378,7 +406,7 @@ fallback-dns-server = system
 hijack-dns = :53
 
 skip-proxy = 192.168.0.0/16,10.0.0.0/8,172.16.0.0/12,localhost,*.local,captive.apple.com
-tun-excluded-routes = 10.0.0.0/8,100.64.0.0/10,127.0.0.0/8,169.254.0.0/16,172.16.0.0/12,192.0.0.0/24,192.0.2.0/24,192.88.99.0/24,192.168.0.0/16,198.51.100.0/24,203.0.113.0/24,224.0.0.0/4,255.255.255.255/32,239.255.255.250/32
+tun-excluded-routes = {tun_excluded_routes}
 tun-included-routes =
 
 always-real-ip = time.*.com,ntp.*.com,*.cloudflareclient.com,*.apple.com
@@ -391,6 +419,10 @@ update-url = {CONF_URL}
 """
 
     rule_lines = ["", "[Rule]"]
+
+    rule_lines.append("# ── Tailscale compatibility ──")
+    rule_lines.extend(TAILSCALE_DIRECT_RULES)
+    rule_lines.append("")
 
     if private_ip:
         _, _, _, outfile, _ = private_ip

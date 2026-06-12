@@ -10,9 +10,17 @@
 |----------|----------|
 | REJECT | Windows телеметрия |
 | PROXY | Google Play, YouTube, Telegram, GitHub, ChatGPT/OpenAI, Instagram/Facebook, TikTok, Microsoft Store и весь остальной трафик, который не попал в DIRECT/REJECT |
-| DIRECT | локальные адреса, РФ/BY домены и IP, белые списки российских сервисов, Steam, Epic, Riot, EFT, Twitch, основная часть Microsoft, Apple, Pinterest, Faceit, torrent-домены и ручные DIRECT-исключения |
+| DIRECT | локальные адреса, Tailscale, РФ/BY домены и IP, белые списки российских сервисов, Steam, Epic, Riot, EFT, Twitch, основная часть Microsoft, Apple, Pinterest, Faceit, torrent-домены и ручные DIRECT-исключения |
 
 Если домен не попал в доменные списки, Shadowrocket сначала проверит `GEOIP,RU` и `GEOIP,BY`. Российские и белорусские IP пойдут напрямую, всё остальное уйдёт через VPN по `FINAL,PROXY`.
+
+## Tailscale compatibility
+
+Конфиг явно пропускает Tailscale напрямую, чтобы Shadowrocket не перехватывал tailnet при одновременной работе с Tailscale на macOS.
+
+В `tun-excluded-routes` добавлены Tailscale-сети `100.64.0.0/10`, `fd7a:115c:a1e0::/48` и DNS-адрес `100.100.100.100/32`. В начале `[Rule]` также есть DIRECT-правила для этих адресов и доменов `ts.net` и `tailscale.com`.
+
+Личные IP серверов не добавляются в общий конфиг: доступ к VPS внутри tailnet должен идти через Tailscale-адреса `100.x.y.z` или MagicDNS.
 
 ## Ручные исключения
 
