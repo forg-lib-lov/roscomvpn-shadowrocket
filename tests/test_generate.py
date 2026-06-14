@@ -19,7 +19,6 @@ class GenerateConfigTests(unittest.TestCase):
             "DOMAIN-SUFFIX,integrations.gitbook.com",
             "DOMAIN-SUFFIX,ka-p.fontawesome.com",
             "DOMAIN-SUFFIX,aliexpress.ru",
-            "DOMAIN-SUFFIX,redgifs.com",
             "DOMAIN-SUFFIX,rdp-onedash.ru",
         }
 

@@ -156,7 +156,6 @@ MANUAL_DIRECT_DOMAINS = [
     "integrations.gitbook.com",
     "ka-p.fontawesome.com",
     "aliexpress.ru",
-    "redgifs.com",
     "rdp-onedash.ru",
 ]
 
