@@ -9,7 +9,6 @@ from __future__ import annotations
 import ipaddress
 import os
 import re
-from datetime import datetime, timezone
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
@@ -106,7 +105,6 @@ FORCE_PROXY_CATEGORIES = [
 ]
 
 TAILSCALE_IPV4_ROUTE = "100.64.0.0/10"
-TAILSCALE_IPV6_ROUTE = "fd7a:115c:a1e0::/48"
 TAILSCALE_DNS_ROUTE = "100.100.100.100/32"
 
 SKIP_PROXY_ENTRIES = [
@@ -138,7 +136,6 @@ TAILSCALE_DIRECT_RULES = [
     # Do not add Tailscale peer routes to skip-proxy/tun-excluded-routes:
     # Shadowrocket on macOS can turn them into LAN gateway routes and override Tailscale.
     f"IP-CIDR,{TAILSCALE_IPV4_ROUTE},DIRECT,no-resolve",
-    f"IP-CIDR6,{TAILSCALE_IPV6_ROUTE},DIRECT,no-resolve",
     f"IP-CIDR,{TAILSCALE_DNS_ROUTE},DIRECT,no-resolve",
     "DOMAIN-SUFFIX,ts.net,DIRECT",
     "DOMAIN-SUFFIX,tailscale.com,DIRECT",
@@ -159,6 +156,8 @@ MANUAL_DIRECT_DOMAINS = [
     "integrations.gitbook.com",
     "ka-p.fontawesome.com",
     "aliexpress.ru",
+    "redgifs.com",
+    "rdp-onedash.ru",
 ]
 
 MICROSOFT_STORE_PROXY_DOMAINS = [
@@ -380,11 +379,9 @@ def validate_action_conflicts(generated: list[tuple[str, str, list[str]]]) -> No
 def write_list(filename: str, entries: list[str], source: str) -> None:
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     entries = unique(entries)
-    now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     header = [
         f"# NAME: {filename}",
         f"# SOURCE: {source}",
-        f"# UPDATED: {now}",
         f"# TOTAL: {len(entries)}",
         "",
     ]
@@ -397,14 +394,13 @@ def write_list(filename: str, entries: list[str], source: str) -> None:
 # ─── генератор .conf ─────────────────────────────────────────────────────────
 
 def build_conf(domain_rules, ip_rules) -> str:
-    now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     skip_proxy = ",".join(SKIP_PROXY_ENTRIES)
     tun_excluded_routes = ",".join(TUN_EXCLUDED_ROUTES)
 
     private_ip = next((r for r in ip_rules if r[3] == "private-ips.list"), None)
     other_ip_rules = [r for r in ip_rules if r[3] != "private-ips.list"]
 
-    general = f"""# roscomvpn-shadowrocket - auto-generated {now}
+    general = f"""# roscomvpn-shadowrocket - auto-generated
 # Routing baseline: https://github.com/hydraponique/roscomvpn-routing
 # Rule sources: roscomvpn-geosite, roscomvpn-geoip, v2fly/domain-list-community, hxehex/russia-mobile-internet-whitelist, manual overrides
 # Repo:   https://github.com/{GITHUB_REPO}
@@ -512,7 +508,7 @@ def main() -> None:
             entries = fetch_v2fly_force_proxy(FORCE_PROXY_CATEGORIES)
             source = "https://github.com/v2fly/domain-list-community"
         elif rtype == "manual":
-            print(f"  Building manual direct list...")
+            print("  Building manual direct list...")
             entries = manual_domains_to_rules(MANUAL_DIRECT_DOMAINS)
             source = "manual DIRECT overrides"
         elif rtype == "manual-proxy":

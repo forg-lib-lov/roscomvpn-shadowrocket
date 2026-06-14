@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "scripts": {
+    "lint": "python3 -m py_compile scripts/generate.py tests/test_generate.py",
+    "test": "python3 -m unittest discover -s tests"
+  }
+}

@@ -18,7 +18,9 @@
 
 Конфиг явно пропускает Tailscale напрямую, чтобы Shadowrocket не перехватывал tailnet при одновременной работе с Tailscale на macOS.
 
-Tailscale peer-сеть `100.64.0.0/10` не добавляется в `skip-proxy` или `tun-excluded-routes`: на macOS Shadowrocket может превратить такие bypass-записи в маршруты через обычный LAN gateway и перекрыть маршрут Tailscale. В начале `[Rule]` есть только DIRECT-правила для `100.64.0.0/10`, `fd7a:115c:a1e0::/48`, `100.100.100.100/32` и доменов `ts.net`/`tailscale.com`, без создания отдельных kernel routes.
+Профиль сейчас IPv4-first: в `[General]` выставлено `ipv6 = false`. В начале `[Rule]` есть DIRECT-правила для Tailscale IPv4-сети `100.64.0.0/10`, Quad100 `100.100.100.100/32` и доменов `ts.net`/`tailscale.com`.
+
+Tailscale peer-сеть `100.64.0.0/10` не добавляется в `skip-proxy` или `tun-excluded-routes`: на macOS Shadowrocket может превратить такие bypass-записи в маршруты через обычный LAN gateway и перекрыть маршрут Tailscale. Полноценная поддержка Tailscale IPv6 отложена до отдельного тестирования с включённым IPv6.
 
 Личные IP серверов не добавляются в общий конфиг: доступ к VPS внутри tailnet должен идти через Tailscale-адреса `100.x.y.z` или MagicDNS.
 
@@ -96,56 +98,14 @@ https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/roscomvpn-shadowrocket/ma
 
 Если у форка другая ветка, замени `/main/` в ссылке на имя своей ветки.
 
-Правила редактируются в `scripts/generate.py`. Основные списки:
+Правила редактируются в `scripts/generate.py`; это единственный источник правды для списков.
 
-```python
-DOMAIN_RULES = [
-    ("youtube", "geosite", "PROXY", "youtube.list"),
-    ("category-ru", "geosite", "DIRECT", "category-ru.list"),
-]
+- `DOMAIN_RULES` и `IP_RULES` задают порядок и действие generated RULE-SET файлов.
+- `FORCE_PROXY_CATEGORIES` задаёт v2fly-категории, которые принудительно идут через VPN.
+- `MANUAL_DIRECT_DOMAINS` задаёт небольшие ручные DIRECT-исключения, включая Happ/GitBook и `aliexpress.ru`.
+- `MICROSOFT_STORE_PROXY_DOMAINS` задаёт ручной VPN-список для Microsoft Store.
 
-IP_RULES = [
-    ("direct", "geoip", "DIRECT", "direct-ips.list", True),
-]
-```
-
-Ручные списки редактируются там же:
-
-```python
-FORCE_PROXY_CATEGORIES = [
-    "openai",
-    "instagram",
-    "facebook",
-    "tiktok",
-]
-
-MANUAL_DIRECT_DOMAINS = [
-    "avto.ru",
-    "autowp.ru",
-    "appstorrent.ru",
-    "lava.ru",
-    "zr.ru",
-    "happ.su",
-    "happ.info",
-    "static-2v.gitbook.com",
-    "api.gitbook.com",
-    "integrations.gitbook.com",
-    "ka-p.fontawesome.com",
-    "aliexpress.ru",
-]
-
-MICROSOFT_STORE_PROXY_DOMAINS = [
-    "apps.microsoft.com",
-    "get.microsoft.com",
-    "displaycatalog.mp.microsoft.com",
-    "purchase.md.mp.microsoft.com",
-    "licensing.mp.microsoft.com",
-    "storeedgefd.dsx.mp.microsoft.com",
-    "dl.delivery.mp.microsoft.com",
-    "store-images.s-microsoft.com",
-    "img-prod-cms-rt-microsoft-com.akamaized.net",
-]
-```
+После изменения правил запусти генератор: `python3 scripts/generate.py`.
 
 Генератор падает с ошибкой, если источник недоступен или после конвертации категория стала пустой. Это сделано специально, чтобы GitHub Actions не публиковал частично сломанный конфиг.
 

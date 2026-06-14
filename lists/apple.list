@@ -1,6 +1,5 @@
 # NAME: apple.list
 # SOURCE: https://github.com/hydraponique/roscomvpn-geosite/blob/master/data/apple
-# UPDATED: 2026-06-12 14:20 UTC
 # TOTAL: 92
 
 DOMAIN-SUFFIX,captive.apple.com
