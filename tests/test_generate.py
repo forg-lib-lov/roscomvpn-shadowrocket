@@ -20,9 +20,23 @@ class GenerateConfigTests(unittest.TestCase):
             "DOMAIN-SUFFIX,ka-p.fontawesome.com",
             "DOMAIN-SUFFIX,aliexpress.ru",
             "DOMAIN-SUFFIX,rdp-onedash.ru",
+            "DOMAIN-SUFFIX,aviasales.ru",
+            "DOMAIN-SUFFIX,usmall.ru",
         }
 
         self.assertLessEqual(expected, rules)
+
+    def test_early_proxy_rules_precede_private_ip_bypass(self):
+        conf = generate.build_conf(generate.DOMAIN_RULES, generate.IP_RULES)
+        private_bypass = (
+            "RULE-SET,https://raw.githubusercontent.com/forg-lib-lov/"
+            "roscomvpn-shadowrocket/main/lists/private-ips.list,DIRECT,no-resolve"
+        )
+
+        self.assertLess(
+            conf.index("DOMAIN-SUFFIX,redgifs.com,PROXY"),
+            conf.index(private_bypass),
+        )
 
     def test_tailscale_routes_do_not_create_kernel_bypass_entries(self):
         forbidden_kernel_bypass_entries = {

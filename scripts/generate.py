@@ -141,6 +141,12 @@ TAILSCALE_DIRECT_RULES = [
     "DOMAIN-SUFFIX,tailscale.com,DIRECT",
 ]
 
+EARLY_PROXY_DOMAINS = [
+    # Some domains must be forced before private-ips because Shadowrocket fake-IP answers
+    # use 198.18.0.0/15, which is otherwise bypassed by private-ips.list.
+    "redgifs.com",
+]
+
 MANUAL_DIRECT_DOMAINS = [
     # Пользовательские исключения: эти сайты должны открываться напрямую.
     # Журнал Auto.ru грузит стили и скрипты с домена avto.ru, а не auto.ru.
@@ -157,6 +163,8 @@ MANUAL_DIRECT_DOMAINS = [
     "ka-p.fontawesome.com",
     "aliexpress.ru",
     "rdp-onedash.ru",
+    "aviasales.ru",
+    "usmall.ru",
 ]
 
 MICROSOFT_STORE_PROXY_DOMAINS = [
@@ -436,6 +444,11 @@ update-url = {CONF_URL}
     rule_lines.append("# ── Tailscale compatibility ──")
     rule_lines.extend(TAILSCALE_DIRECT_RULES)
     rule_lines.append("")
+
+    if EARLY_PROXY_DOMAINS:
+        rule_lines.append("# ── Early PROXY overrides before private fake-IP bypass ──")
+        rule_lines.extend(f"{rule},PROXY" for rule in manual_domains_to_rules(EARLY_PROXY_DOMAINS))
+        rule_lines.append("")
 
     if private_ip:
         _, _, _, outfile, _ = private_ip
