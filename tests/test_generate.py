@@ -21,6 +21,7 @@ class GenerateConfigTests(unittest.TestCase):
             "DOMAIN-SUFFIX,aliexpress.ru",
             "DOMAIN-SUFFIX,rdp-onedash.ru",
             "DOMAIN-SUFFIX,aviasales.ru",
+            "DOMAIN-SUFFIX,aviasales.com",
             "DOMAIN-SUFFIX,usmall.ru",
         }
 

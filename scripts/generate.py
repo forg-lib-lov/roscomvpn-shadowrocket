@@ -164,6 +164,7 @@ MANUAL_DIRECT_DOMAINS = [
     "aliexpress.ru",
     "rdp-onedash.ru",
     "aviasales.ru",
+    "aviasales.com",
     "usmall.ru",
 ]
 
