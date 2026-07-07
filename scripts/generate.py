@@ -153,6 +153,8 @@ EARLY_PROXY_DOMAINS = [
     "gcloudcache.com",
     "byteintl.com",
     "ibytedtos.com",
+    "cdn.setka.ru",
+    "cdn-assets.setka.ru",
 ]
 
 MANUAL_DIRECT_DOMAINS = [
@@ -175,8 +177,6 @@ MANUAL_DIRECT_DOMAINS = [
     "aviasales.com",
     "usmall.ru",
     "setka.ru",
-    "cdn.setka.ru",
-    "cdn-assets.setka.ru",
 ]
 
 MICROSOFT_STORE_PROXY_DOMAINS = [
