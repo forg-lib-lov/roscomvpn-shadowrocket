@@ -23,7 +23,6 @@ class GenerateConfigTests(unittest.TestCase):
             "DOMAIN-SUFFIX,aviasales.ru",
             "DOMAIN-SUFFIX,aviasales.com",
             "DOMAIN-SUFFIX,usmall.ru",
-            "DOMAIN-SUFFIX,setka.ru",
         }
 
         self.assertLessEqual(expected, rules)
@@ -49,8 +48,7 @@ class GenerateConfigTests(unittest.TestCase):
             "gcloudcache.com",
             "byteintl.com",
             "ibytedtos.com",
-            "cdn.setka.ru",
-            "cdn-assets.setka.ru",
+            "setka.ru",
         ]:
             self.assertLess(
                 conf.index(f"DOMAIN-SUFFIX,{domain},PROXY"),
