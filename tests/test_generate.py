@@ -23,6 +23,9 @@ class GenerateConfigTests(unittest.TestCase):
             "DOMAIN-SUFFIX,aviasales.ru",
             "DOMAIN-SUFFIX,aviasales.com",
             "DOMAIN-SUFFIX,usmall.ru",
+            "DOMAIN-SUFFIX,setka.ru",
+            "DOMAIN-SUFFIX,cdn.setka.ru",
+            "DOMAIN-SUFFIX,cdn-assets.setka.ru",
         }
 
         self.assertLessEqual(expected, rules)
@@ -38,6 +41,21 @@ class GenerateConfigTests(unittest.TestCase):
             conf.index("DOMAIN-SUFFIX,redgifs.com,PROXY"),
             conf.index(private_bypass),
         )
+
+        for domain in [
+            "capcut.com",
+            "capcutstatic.com",
+            "ibyteimg.com",
+            "byteplus.com",
+            "bytepluscdn.com",
+            "gcloudcache.com",
+            "byteintl.com",
+            "ibytedtos.com",
+        ]:
+            self.assertLess(
+                conf.index(f"DOMAIN-SUFFIX,{domain},PROXY"),
+                conf.index(private_bypass),
+            )
 
     def test_tailscale_routes_do_not_create_kernel_bypass_entries(self):
         forbidden_kernel_bypass_entries = {
@@ -71,6 +89,20 @@ class GenerateConfigTests(unittest.TestCase):
 
         self.assertLess(conf.index("GEOIP,RU,DIRECT"), final_proxy)
         self.assertLess(conf.index("GEOIP,BY,DIRECT"), final_proxy)
+
+    def test_generated_config_uses_expected_dns_defaults(self):
+        conf = generate.build_conf(generate.DOMAIN_RULES, generate.IP_RULES)
+
+        self.assertIn("private-ip-answer = true", conf)
+        self.assertIn("dns-fallback-system = false", conf)
+        self.assertIn("dns-server = https://dns.comss.one/dns-query", conf)
+        self.assertIn(
+            "fallback-dns-server = https://dns.google/dns-query, "
+            "https://cloudflare-dns.com/dns-query, "
+            "https://dns.quad9.net/dns-query, "
+            "https://unfiltered.adguard-dns.com/dns-query",
+            conf,
+        )
 
     def test_generated_manual_direct_file_matches_generator(self):
         manual_direct = ROOT / "lists" / "manual-direct.list"

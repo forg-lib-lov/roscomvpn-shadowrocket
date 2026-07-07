@@ -24,6 +24,10 @@ Tailscale peer-сеть `100.64.0.0/10` не добавляется в `skip-pro
 
 Личные IP серверов не добавляются в общий конфиг: доступ к VPS внутри tailnet должен идти через Tailscale-адреса `100.x.y.z` или MagicDNS.
 
+## DNS
+
+По умолчанию в конфиге включён `Private IP Answer`, DNS Override задан как `https://dns.comss.one/dns-query`, а Fallback DNS использует `https://dns.google/dns-query`, `https://cloudflare-dns.com/dns-query`, `https://dns.quad9.net/dns-query` и `https://unfiltered.adguard-dns.com/dns-query`.
+
 ## Ручные исключения
 
 В конфиге есть несколько небольших дополнительных слоёв.
@@ -32,7 +36,7 @@ Tailscale peer-сеть `100.64.0.0/10` не добавляется в `skip-pro
 
 `microsoft-store.list` - Microsoft Store через VPN: сайт `apps.microsoft.com`, каталог, лицензирование и домены скачивания пакетов.
 
-`manual-direct.list` - сайты, которые должны идти напрямую: `avto.ru`, `autowp.ru`, `appstorrent.ru`, `lava.ru`, `zr.ru`, Happ/GitBook-домены и `aliexpress.ru`.
+`manual-direct.list` - сайты, которые должны идти напрямую: `avto.ru`, `autowp.ru`, `appstorrent.ru`, `lava.ru`, `zr.ru`, Happ/GitBook-домены, `aliexpress.ru` и `setka.ru`.
 
 `avto.ru` добавлен отдельно из-за Журнала Auto.ru: сам сайт открывается на `auto.ru`, но стили и скрипты страницы `auto.ru/mag/` грузятся с похожего, но другого домена `st.avto.ru`. Без этого страница может открываться как голый текст с огромными картинками.
 
@@ -41,6 +45,10 @@ Tailscale peer-сеть `100.64.0.0/10` не добавляется в `skip-pro
 Домены Happ `happ.su`, `happ.info` и GitBook-ресурсы добавлены в ручные DIRECT-исключения, потому что сайт Happ может плохо открываться при текущем роутинге.
 
 `aliexpress.ru` добавлен в ручные DIRECT-исключения, потому что российская версия AliExpress может сбоить при маршрутизации через VPN. Глобальная `aliexpress.com`-версия этим правилом не затрагивается.
+
+CapCut/Dreamina и BytePlus-домены добавлены в ранние PROXY-исключения, чтобы их API и CDN не попадали в обход локальных fake-IP адресов.
+
+`setka.ru` и CDN-домены Сетки добавлены в ручные DIRECT-исключения, потому что сервис от hh.ru может плохо открываться при маршрутизации через VPN.
 
 Google Play идёт через VPN не потому, что весь магазин полностью заблокирован. Бесплатные приложения обычно доступны, но платные приложения, платежи и часть обновлений для российских аккаунтов ограничены. Через VPN поведение Google Play обычно предсказуемее.
 
@@ -101,6 +109,7 @@ https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/roscomvpn-shadowrocket/ma
 Правила редактируются в `scripts/generate.py`; это единственный источник правды для списков.
 
 - `DOMAIN_RULES` и `IP_RULES` задают порядок и действие generated RULE-SET файлов.
+- `EARLY_PROXY_DOMAINS` задаёт ручные PROXY-исключения, которые должны сработать до локального `private-ips` bypass.
 - `FORCE_PROXY_CATEGORIES` задаёт v2fly-категории, которые принудительно идут через VPN.
 - `MANUAL_DIRECT_DOMAINS` задаёт небольшие ручные DIRECT-исключения, включая Happ/GitBook и `aliexpress.ru`.
 - `MICROSOFT_STORE_PROXY_DOMAINS` задаёт ручной VPN-список для Microsoft Store.

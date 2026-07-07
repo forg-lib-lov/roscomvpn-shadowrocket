@@ -1,6 +1,6 @@
 # NAME: manual-direct.list
 # SOURCE: manual DIRECT overrides
-# TOTAL: 16
+# TOTAL: 19
 
 DOMAIN-SUFFIX,avto.ru
 DOMAIN-SUFFIX,autowp.ru
@@ -18,3 +18,6 @@ DOMAIN-SUFFIX,rdp-onedash.ru
 DOMAIN-SUFFIX,aviasales.ru
 DOMAIN-SUFFIX,aviasales.com
 DOMAIN-SUFFIX,usmall.ru
+DOMAIN-SUFFIX,setka.ru
+DOMAIN-SUFFIX,cdn.setka.ru
+DOMAIN-SUFFIX,cdn-assets.setka.ru

@@ -145,6 +145,14 @@ EARLY_PROXY_DOMAINS = [
     # Some domains must be forced before private-ips because Shadowrocket fake-IP answers
     # use 198.18.0.0/15, which is otherwise bypassed by private-ips.list.
     "redgifs.com",
+    "capcut.com",
+    "capcutstatic.com",
+    "ibyteimg.com",
+    "byteplus.com",
+    "bytepluscdn.com",
+    "gcloudcache.com",
+    "byteintl.com",
+    "ibytedtos.com",
 ]
 
 MANUAL_DIRECT_DOMAINS = [
@@ -166,6 +174,9 @@ MANUAL_DIRECT_DOMAINS = [
     "aviasales.ru",
     "aviasales.com",
     "usmall.ru",
+    "setka.ru",
+    "cdn.setka.ru",
+    "cdn-assets.setka.ru",
 ]
 
 MICROSOFT_STORE_PROXY_DOMAINS = [
@@ -419,12 +430,12 @@ ipv6 = false
 prefer-ipv6 = false
 private-ip-answer = true
 dns-direct-system = false
-dns-fallback-system = true
+dns-fallback-system = false
 dns-direct-fallback-proxy = true
 
-# Яндекс DNS для прямого трафика, Google DNS для проксированного трафика
-dns-server = https://77.88.8.8/dns-query, https://8.8.8.8/dns-query
-fallback-dns-server = system
+# DNS Override и Fallback DNS по умолчанию
+dns-server = https://dns.comss.one/dns-query
+fallback-dns-server = https://dns.google/dns-query, https://cloudflare-dns.com/dns-query, https://dns.quad9.net/dns-query, https://unfiltered.adguard-dns.com/dns-query
 hijack-dns = :53
 
 skip-proxy = {skip_proxy}
