@@ -1,6 +1,6 @@
 # NAME: direct-ips.list
 # SOURCE: https://github.com/hydraponique/roscomvpn-geoip/blob/master/release/text/direct.txt
-# TOTAL: 35281
+# TOTAL: 35283
 
 IP-CIDR,2.26.8.0/24,no-resolve
 IP-CIDR,2.26.10.0/24,no-resolve
@@ -1567,7 +1567,9 @@ IP-CIDR,5.253.164.0/22,no-resolve
 IP-CIDR,5.254.176.0/21,no-resolve
 IP-CIDR,5.254.224.0/19,no-resolve
 IP-CIDR,5.255.192.0/18,no-resolve
+IP-CIDR,8.21.110.0/24,no-resolve
 IP-CIDR,8.40.27.0/24,no-resolve
+IP-CIDR,8.41.37.0/24,no-resolve
 IP-CIDR,8.209.0.0/19,no-resolve
 IP-CIDR,8.209.128.0/18,no-resolve
 IP-CIDR,14.0.37.0/24,no-resolve
