@@ -1,6 +1,6 @@
 # NAME: hxehex-whitelist.list
 # SOURCE: https://raw.githubusercontent.com/hxehex/russia-mobile-internet-whitelist/main/whitelist.txt
-# TOTAL: 908
+# TOTAL: 910
 
 DOMAIN-SUFFIX,00.img.avito.st
 DOMAIN-SUFFIX,01.img.avito.st
@@ -380,6 +380,7 @@ DOMAIN-SUFFIX,id.tau.vk.ru
 DOMAIN-SUFFIX,id.tbank.ru
 DOMAIN-SUFFIX,id.vk.ru
 DOMAIN-SUFFIX,imgproxy.cdn-tinkoff.ru
+DOMAIN-SUFFIX,imgsmail.ru
 DOMAIN-SUFFIX,imperia.mail.ru
 DOMAIN-SUFFIX,informer.yandex.ru
 DOMAIN-SUFFIX,infra.mail.ru
@@ -598,6 +599,7 @@ DOMAIN-SUFFIX,souz.mail.ru
 DOMAIN-SUFFIX,speller.yandex.net
 DOMAIN-SUFFIX,sphere.mail.ru
 DOMAIN-SUFFIX,sport.mail.ru
+DOMAIN-SUFFIX,sportmail.ru
 DOMAIN-SUFFIX,sso-app4.vtb.ru
 DOMAIN-SUFFIX,sso-app5.vtb.ru
 DOMAIN-SUFFIX,sso.auto.ru
