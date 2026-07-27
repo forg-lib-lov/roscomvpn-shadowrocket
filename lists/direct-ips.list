@@ -1,6 +1,6 @@
 # NAME: direct-ips.list
 # SOURCE: https://github.com/hydraponique/roscomvpn-geoip/blob/master/release/text/direct.txt
-# TOTAL: 35584
+# TOTAL: 35589
 
 IP-CIDR,2.26.8.0/24,no-resolve
 IP-CIDR,2.26.10.0/24,no-resolve
@@ -19733,7 +19733,7 @@ IP-CIDR,138.226.238.0/24,no-resolve
 IP-CIDR,138.249.2.0/23,no-resolve
 IP-CIDR,138.249.12.0/23,no-resolve
 IP-CIDR,138.249.15.0/24,no-resolve
-IP-CIDR,138.249.16.0/24,no-resolve
+IP-CIDR,138.249.16.0/23,no-resolve
 IP-CIDR,138.249.18.0/24,no-resolve
 IP-CIDR,138.249.22.0/23,no-resolve
 IP-CIDR,138.249.24.0/24,no-resolve
@@ -28927,6 +28927,8 @@ IP-CIDR,188.255.0.0/17,no-resolve
 IP-CIDR,188.255.164.0/24,no-resolve
 IP-CIDR,189.74.104.0/23,no-resolve
 IP-CIDR,189.74.106.0/24,no-resolve
+IP-CIDR,189.74.109.0/24,no-resolve
+IP-CIDR,189.74.110.0/23,no-resolve
 IP-CIDR,189.74.112.0/22,no-resolve
 IP-CIDR,189.74.116.0/23,no-resolve
 IP-CIDR,189.74.118.0/24,no-resolve
@@ -33597,6 +33599,7 @@ IP-CIDR,201.34.142.0/23,no-resolve
 IP-CIDR,201.34.156.0/22,no-resolve
 IP-CIDR,201.50.12.18/31,no-resolve
 IP-CIDR,201.50.12.20/31,no-resolve
+IP-CIDR,201.50.114.0/24,no-resolve
 IP-CIDR,201.51.0.0/21,no-resolve
 IP-CIDR,201.51.8.0/23,no-resolve
 IP-CIDR,201.51.11.0/24,no-resolve
@@ -33647,6 +33650,7 @@ IP-CIDR,207.89.19.0/24,no-resolve
 IP-CIDR,207.117.121.0/24,no-resolve
 IP-CIDR,207.226.45.0/24,no-resolve
 IP-CIDR,207.241.164.224/28,no-resolve
+IP-CIDR,208.87.93.0/24,no-resolve
 IP-CIDR,208.92.226.0/24,no-resolve
 IP-CIDR,208.127.171.1/32,no-resolve
 IP-CIDR,208.127.171.2/31,no-resolve
@@ -33947,7 +33951,7 @@ IP-CIDR,212.67.11.128/25,no-resolve
 IP-CIDR,212.67.12.0/22,no-resolve
 IP-CIDR,212.67.16.0/20,no-resolve
 IP-CIDR,212.69.96.0/19,no-resolve
-IP-CIDR,212.73.64.118/32,no-resolve
+IP-CIDR,212.73.64.112/29,no-resolve
 IP-CIDR,212.73.96.0/19,no-resolve
 IP-CIDR,212.74.192.0/19,no-resolve
 IP-CIDR,212.74.224.0/22,no-resolve
@@ -35535,6 +35539,7 @@ IP-CIDR6,2a02:aec0:6::/48,no-resolve
 IP-CIDR6,2a02:aec0:8::/47,no-resolve
 IP-CIDR6,2a02:aec0:b::/48,no-resolve
 IP-CIDR6,2a02:aec0:c::/48,no-resolve
+IP-CIDR6,2a05:c3c0::/32,no-resolve
 IP-CIDR6,2a07:aa40:20::/44,no-resolve
 IP-CIDR6,2a0b:1440::/32,no-resolve
 IP-CIDR6,2a0b:1447:20::/44,no-resolve
