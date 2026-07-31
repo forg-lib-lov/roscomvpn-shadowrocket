@@ -1,6 +1,6 @@
 # NAME: direct-ips.list
 # SOURCE: https://github.com/hydraponique/roscomvpn-geoip/blob/master/release/text/direct.txt
-# TOTAL: 35592
+# TOTAL: 35591
 
 IP-CIDR,2.26.8.0/24,no-resolve
 IP-CIDR,2.26.10.0/24,no-resolve
@@ -1985,6 +1985,7 @@ IP-CIDR,31.41.240.0/21,no-resolve
 IP-CIDR,31.42.32.0/20,no-resolve
 IP-CIDR,31.42.90.0/24,no-resolve
 IP-CIDR,31.42.96.0/20,no-resolve
+IP-CIDR,31.42.121.128/25,no-resolve
 IP-CIDR,31.42.192.0/18,no-resolve
 IP-CIDR,31.43.192.0/19,no-resolve
 IP-CIDR,31.44.8.0/21,no-resolve
@@ -14010,9 +14011,6 @@ IP-CIDR,91.213.248.64/26,no-resolve
 IP-CIDR,91.213.248.128/25,no-resolve
 IP-CIDR,91.213.249.0/24,no-resolve
 IP-CIDR,91.214.40.0/23,no-resolve
-IP-CIDR,91.214.48.0/28,no-resolve
-IP-CIDR,91.214.48.32/27,no-resolve
-IP-CIDR,91.214.48.64/26,no-resolve
 IP-CIDR,91.214.48.128/29,no-resolve
 IP-CIDR,91.214.48.136/30,no-resolve
 IP-CIDR,91.214.48.168/30,no-resolve
@@ -20541,6 +20539,8 @@ IP-CIDR,153.43.77.0/24,no-resolve
 IP-CIDR,153.43.78.0/24,no-resolve
 IP-CIDR,153.43.152.0/21,no-resolve
 IP-CIDR,153.51.32.0/19,no-resolve
+IP-CIDR,153.51.64.0/20,no-resolve
+IP-CIDR,153.51.80.0/21,no-resolve
 IP-CIDR,153.51.96.0/19,no-resolve
 IP-CIDR,153.51.160.0/22,no-resolve
 IP-CIDR,153.51.168.0/24,no-resolve
@@ -25804,8 +25804,7 @@ IP-CIDR,185.144.30.64/26,no-resolve
 IP-CIDR,185.144.30.128/25,no-resolve
 IP-CIDR,185.144.31.0/24,no-resolve
 IP-CIDR,185.144.60.0/22,no-resolve
-IP-CIDR,185.144.97.64/27,no-resolve
-IP-CIDR,185.144.97.112/29,no-resolve
+IP-CIDR,185.144.97.0/25,no-resolve
 IP-CIDR,185.144.114.0/24,no-resolve
 IP-CIDR,185.144.136.0/22,no-resolve
 IP-CIDR,185.144.200.0/22,no-resolve
@@ -31028,7 +31027,8 @@ IP-CIDR,193.238.47.192/26,no-resolve
 IP-CIDR,193.238.48.0/22,no-resolve
 IP-CIDR,193.238.72.0/22,no-resolve
 IP-CIDR,193.238.108.0/23,no-resolve
-IP-CIDR,193.238.110.128/25,no-resolve
+IP-CIDR,193.238.110.128/27,no-resolve
+IP-CIDR,193.238.110.192/26,no-resolve
 IP-CIDR,193.238.111.0/24,no-resolve
 IP-CIDR,193.238.116.0/22,no-resolve
 IP-CIDR,193.238.128.0/22,no-resolve
@@ -33591,8 +33591,7 @@ IP-CIDR,201.4.108.0/24,no-resolve
 IP-CIDR,201.4.116.0/24,no-resolve
 IP-CIDR,201.4.124.0/24,no-resolve
 IP-CIDR,201.24.60.0/22,no-resolve
-IP-CIDR,201.24.112.0/22,no-resolve
-IP-CIDR,201.24.116.0/23,no-resolve
+IP-CIDR,201.24.112.0/21,no-resolve
 IP-CIDR,201.24.124.0/22,no-resolve
 IP-CIDR,201.34.128.0/23,no-resolve
 IP-CIDR,201.34.131.0/24,no-resolve
