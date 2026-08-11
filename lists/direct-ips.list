@@ -1,6 +1,6 @@
 # NAME: direct-ips.list
 # SOURCE: https://github.com/hydraponique/roscomvpn-geoip/blob/master/release/text/direct.txt
-# TOTAL: 35253
+# TOTAL: 35256
 
 IP-CIDR,2.26.8.0/24,no-resolve
 IP-CIDR,2.26.10.0/24,no-resolve
@@ -619,7 +619,6 @@ IP-CIDR,5.59.120.0/21,no-resolve
 IP-CIDR,5.59.128.0/19,no-resolve
 IP-CIDR,5.59.176.0/22,no-resolve
 IP-CIDR,5.59.184.0/23,no-resolve
-IP-CIDR,5.59.217.128/25,no-resolve
 IP-CIDR,5.59.222.0/24,no-resolve
 IP-CIDR,5.59.229.0/24,no-resolve
 IP-CIDR,5.59.244.0/22,no-resolve
@@ -10583,6 +10582,7 @@ IP-CIDR,86.110.200.0/22,no-resolve
 IP-CIDR,86.110.208.0/20,no-resolve
 IP-CIDR,86.111.0.0/19,no-resolve
 IP-CIDR,87.58.192.2/32,no-resolve
+IP-CIDR,87.58.220.0/24,no-resolve
 IP-CIDR,87.76.0.0/20,no-resolve
 IP-CIDR,87.84.0.0/24,no-resolve
 IP-CIDR,87.103.128.0/17,no-resolve
@@ -29035,7 +29035,7 @@ IP-CIDR,192.203.80.0/24,no-resolve
 IP-CIDR,192.235.32.0/20,no-resolve
 IP-CIDR,193.0.130.0/23,no-resolve
 IP-CIDR,193.0.132.0/22,no-resolve
-IP-CIDR,193.0.145.0/24,no-resolve
+IP-CIDR,193.0.144.0/23,no-resolve
 IP-CIDR,193.0.148.0/22,no-resolve
 IP-CIDR,193.0.152.0/22,no-resolve
 IP-CIDR,193.0.166.0/23,no-resolve
@@ -35153,7 +35153,11 @@ IP-CIDR,217.198.0.0/20,no-resolve
 IP-CIDR,217.198.80.0/20,no-resolve
 IP-CIDR,217.198.160.0/20,no-resolve
 IP-CIDR,217.199.208.0/20,no-resolve
-IP-CIDR,217.199.224.0/20,no-resolve
+IP-CIDR,217.199.224.0/21,no-resolve
+IP-CIDR,217.199.232.0/23,no-resolve
+IP-CIDR,217.199.234.0/24,no-resolve
+IP-CIDR,217.199.235.128/25,no-resolve
+IP-CIDR,217.199.236.0/22,no-resolve
 IP-CIDR,217.199.240.0/21,no-resolve
 IP-CIDR,217.199.248.0/22,no-resolve
 IP-CIDR,217.199.252.0/24,no-resolve
@@ -35210,7 +35214,6 @@ IP-CIDR6,2a0c:4480:1::/48,no-resolve
 IP-CIDR6,2a0c:4480:2::/47,no-resolve
 IP-CIDR6,2a0c:4480:6::/47,no-resolve
 IP-CIDR6,2a0c:4480:8::/48,no-resolve
-IP-CIDR6,2a0c:4480:c::/48,no-resolve
 IP-CIDR6,2a0c:4481:1::/48,no-resolve
 IP-CIDR6,2a0c:4481:2::/48,no-resolve
 IP-CIDR6,2a0c:4481:8::/48,no-resolve
